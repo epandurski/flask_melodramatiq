@@ -118,7 +118,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
                 )
             )
         if app is not self.__app:
-            broker.add_middleware(MultipleAppsWarningMiddleware())
+            self._proxied_instance.add_middleware(MultipleAppsWarningMiddleware())
         if not hasattr(app, 'extensions'):
             app.extensions = {}
         app.extensions[self.__config_prefix.lower()] = self
