@@ -149,10 +149,11 @@ class LazyActor(_ProxiedInstanceMixin, dramatiq.Actor):
         self.clear_proxied_instance()
         self.__fn = fn
         self.__kw = kw
-        if broker._unregistered_lazy_actors is None:
+        actors = getattr(broker, '_unregistered_lazy_actors', None)
+        if actors is None:
             self.register(broker)
         else:
-            broker._unregistered_lazy_actors.append(self)
+            actors.append(self)
 
     def register(self, broker):
         self._proxied_instance = dramatiq.Actor(self.__fn, broker=broker, **self.__kw)
