@@ -4,26 +4,30 @@ import functools
 import dramatiq
 from dramatiq.brokers import stub
 
-
 __all__ = ['LazyActor', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
+
+_broker_classes = {}
 
 
 def _raise_error(e, *args, **kwargs):
     raise e
 
 
-def _create_broker(module_name, class_name, default_url='', broker_factory=None):
+def _create_broker_class(module_name, class_name, default_url):
     try:
         module = importlib.import_module(module_name)
     except ImportError as e:
-        return type(class_name, (), dict(
+        broker_class = type(class_name, (), dict(
             __init__=functools.partial(_raise_error, e),
         ))
-    class_ = getattr(module, class_name)
-    return type(class_name, (_LazyBrokerMixin, class_), dict(
-        _LazyBrokerMixin__broker_default_url=default_url,
-        _LazyBrokerMixin__broker_factory=staticmethod(broker_factory) if broker_factory else class_,
-    ))
+    else:
+        superclass = getattr(module, class_name)
+        broker_class = type(class_name, (_LazyBrokerMixin, superclass), dict(
+            _LazyBrokerMixin__broker_default_url=default_url,
+            _LazyBrokerMixin__broker_factory=superclass,
+        ))
+    _broker_classes[class_name] = broker_class
+    return broker_class
 
 
 class _ProxiedInstanceMixin:
@@ -72,53 +76,51 @@ class _ProxiedInstanceMixin:
 
 class _LazyBrokerMixin(_ProxiedInstanceMixin):
     __registered_config_prefixes = set()
+    __broker_default_url = None
 
     def __init__(self, app=None, config_prefix='DRAMATIQ_BROKER', **options):
         object.__setattr__(self, '_proxied_instance', None)
-        self._unregistered_lazy_actors = []
+        if not config_prefix.isupper():
+            raise ValueError(
+                'Invalid configuration prefix: "{}". Configuration prefixes '
+                'should be all uppercase.'.format(config_prefix)
+            )
         if config_prefix in self.__registered_config_prefixes:
             raise RuntimeError(
-                'Can not create a second broker with config prefix "{}". '
+                'Can not create a second broker with configuration prefix "{}". '
                 'Did you forget to pass the "config_prefix" argument when '
                 'creating the broker?'.format(config_prefix)
             )
         self.__registered_config_prefixes.add(config_prefix)
         self.__config_prefix = config_prefix
         self.__options = options
-        self.__broker_url = None
+        self.__configuration = None
         self.__app = None
         self.__stub = stub.StubBroker(middleware=options.get('middleware'))
+        self._unregistered_lazy_actors = []
         if config_prefix == 'DRAMATIQ_BROKER':
             dramatiq.set_broker(self)
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app):
-        options = {'url': self.__read_url_from_config(app)}
-        options.update(self.__options)
-        broker_url = options['url']
+        configuration = self.__get_configuration(app)
         if self.__stub:
             self.__stub.close()
             self.__stub = None
-            broker = self.__broker_factory(**options)
+            self.__app = app
+            self.__configuration = configuration
+            kw = configuration.copy()
+            self.__class__ = kw.pop('class')
+            broker = self.__broker_factory(**kw)
             broker.add_middleware(AppContextMiddleware(app))
             for actor in self._unregistered_lazy_actors:
                 actor._register_proxied_instance(broker=broker)
             self._unregistered_lazy_actors = None
-            self.__broker_url = broker_url
-            self.__app = app
             self._proxied_instance = broker  # `self` is sealed from now on.
-        if broker_url != self.__broker_url:
+        if configuration != self.__configuration:
             raise RuntimeError(
-                '{app} tried to start a broker with '
-                '{config_prefix}_URL={new_url}, '
-                'but another app already has started that broker with '
-                '{config_prefix}_URL={old_url}.'.format(
-                    app=app,
-                    config_prefix=self.__config_prefix,
-                    new_url=broker_url,
-                    old_url=self.__broker_url,
-                )
+                '{} tried to reconfigure an already configured broker.'.format(app)
             )
         if app is not self.__app:
             self._proxied_instance.add_middleware(MultipleAppsWarningMiddleware())
@@ -140,11 +142,53 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
     def actor_options(self):
         return (self._proxied_instance or self.__stub).actor_options
 
-    def __read_url_from_config(self, app):
-        return (
-            app.config.get('{0}_URL'.format(self.__config_prefix))
-            or self.__broker_default_url
+    def __get_principal_options(self):
+        assert 'class' not in self.__options
+        options = self.__options.copy()
+        class_name = type(self).__name__
+        if class_name in _broker_classes:
+            options['class'] = class_name
+        return options
+
+    def __get_configuration_options(self, app):
+        prefix = '{}_'.format(self.__config_prefix)
+        return {
+            k[len(prefix):].lower(): v
+            for k, v in app.config.items()
+            if k.isupper() and k.startswith(prefix)
+        }
+
+    def __merge_options(self, primary, secondary):
+        options = primary.copy()
+        for k, v in options.items():
+            if k in secondary and v != secondary[k]:
+                raise RuntimeError(
+                    'Wrong configuration value: {key}={value}. '
+                    '{key} can not be overriden for this broker.'.format(
+                        key=k,
+                        value=secondary[k],
+                    ))
+        options.update(secondary)
+        return options
+
+    def __get_configuration(self, app):
+        configuration = self.__merge_options(
+            self.__get_principal_options(),
+            self.__get_configuration_options(app),
         )
+        class_name = configuration.get('class', 'RabbitmqBroker')
+        try:
+            configuration['class'] = _broker_classes[class_name]
+        except KeyError:
+            raise RuntimeError(
+                'Invalid broker class: {config_prefix}_CLASS={class_name}'.format(
+                    config_prefix=self.__config_prefix,
+                    class_name=class_name,
+                ))
+        default_url = configuration['class'].__broker_default_url
+        if default_url is not None:
+            configuration.setdefault('url', default_url)
+        return configuration
 
 
 class LazyActor(_ProxiedInstanceMixin, dramatiq.Actor):
@@ -197,22 +241,26 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
         )
 
 
-RabbitmqBroker = _create_broker(
+RabbitmqBroker = _create_broker_class(
     module_name='dramatiq.brokers.rabbitmq',
     class_name='RabbitmqBroker',
     default_url='amqp://127.0.0.1:5672',
 )
 
 
-RedisBroker = _create_broker(
+RedisBroker = _create_broker_class(
     module_name='dramatiq.brokers.redis',
     class_name='RedisBroker',
     default_url='redis://127.0.0.1:6379/0',
 )
 
 
-StubBroker = _create_broker(
+StubBroker = _create_broker_class(
     module_name='dramatiq.brokers.stub',
     class_name='StubBroker',
-    broker_factory=lambda url, **kw: stub.StubBroker(**kw),
+    default_url=None,
 )
+
+
+class Broker(_LazyBrokerMixin):
+    pass

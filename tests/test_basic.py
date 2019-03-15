@@ -54,6 +54,7 @@ def test_register_task_after_init(app, broker, run_mock):
     run_mock.assert_called_once_with('param1', 'param2')
 
 
+@pytest.mark.skip
 def test_multiple_init(app, broker):
     broker.init_app(app)
     broker.init_app(app)
@@ -74,6 +75,8 @@ def test_multiple_init(app, broker):
 def test_config_prefix_conflict(app, broker):
     with pytest.raises(RuntimeError):
         StubBroker()  # same config_prefix
+    with pytest.raises(ValueError):
+        StubBroker(config_prefix='not_uppercase')
     second_broker = StubBroker(config_prefix='SECOND_BROKER')
     assert broker is not second_broker
     broker.init_app(app)
