@@ -164,7 +164,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
             if k in secondary and v != secondary[k]:
                 raise RuntimeError(
                     'Wrong configuration value: {key}={value}. '
-                    '{key} can not be overriden for this broker.'.format(
+                    '{key} should not be overridden for this broker.'.format(
                         key=k,
                         value=secondary[k],
                     ))
