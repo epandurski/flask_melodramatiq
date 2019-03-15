@@ -110,9 +110,9 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
             self.__stub = None
             self.__app = app
             self.__configuration = configuration
-            kw = configuration.copy()
-            self.__class__ = kw.pop('class')
-            broker = self.__broker_factory(**kw)
+            options = configuration.copy()
+            self.__class__ = options.pop('class')
+            broker = self.__broker_factory(**options)
             broker.add_middleware(AppContextMiddleware(app))
             for actor in self._unregistered_lazy_actors:
                 actor._register_proxied_instance(broker=broker)
