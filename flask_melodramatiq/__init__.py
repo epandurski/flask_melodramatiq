@@ -178,16 +178,15 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
         )
         class_name = configuration.get('class', 'RabbitmqBroker')
         try:
-            configuration['class'] = _broker_classes[class_name]
+            broker_class = configuration['class'] = _broker_classes[class_name]
         except KeyError:
-            raise RuntimeError(
-                'Invalid broker class: {config_prefix}_CLASS={class_name}'.format(
+            raise ValueError(
+                'invalid broker class: {config_prefix}_CLASS={class_name}'.format(
                     config_prefix=self.__config_prefix,
                     class_name=class_name,
                 ))
-        default_url = configuration['class'].__broker_default_url
-        if default_url is not None:
-            configuration.setdefault('url', default_url)
+        if broker_class.__broker_default_url is not None:
+            configuration.setdefault('url', broker_class.__broker_default_url)
         return configuration
 
 
