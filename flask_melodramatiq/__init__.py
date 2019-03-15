@@ -150,7 +150,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
             options['class'] = class_name
         return options
 
-    def __get_configuration_options(self, app):
+    def __get_config_options(self, app):
         prefix = '{}_'.format(self.__config_prefix)
         return {
             k[len(prefix):].lower(): v
@@ -174,7 +174,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
     def __get_configuration(self, app):
         configuration = self.__merge_options(
             self.__get_principal_options(),
-            self.__get_configuration_options(app),
+            self.__get_config_options(app),
         )
         class_name = configuration.get('class', 'RabbitmqBroker')
         try:
