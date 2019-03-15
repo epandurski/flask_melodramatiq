@@ -108,3 +108,24 @@ def test_flask_app_context(app, broker, run_mock):
     worker.start()
     worker.join()
     run_mock.assert_called_once()
+
+
+def test_generic_actor(app, broker, run_mock):
+    class AbstractTask(dramatiq.GenericActor):
+        class Meta:
+            abstract = True
+            actor_class = LazyActor
+
+        def perform(self, arg):
+            self.run(arg)
+
+    class Task(AbstractTask):
+        def run(self, arg):
+            run_mock(arg)
+
+    broker.init_app(app)
+    Task.send('message')
+    worker = dramatiq.Worker(broker)
+    worker.start()
+    worker.join()
+    run_mock.assert_called_once_with('message')
