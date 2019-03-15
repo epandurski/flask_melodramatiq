@@ -53,7 +53,11 @@ class _ProxiedInstanceMixin:
 
     def __getattr__(self, name):
         if self._proxied_instance is None:
-            raise RuntimeError('The init_app() method must be called on brokers before use.')
+            raise RuntimeError(
+                'The init_app() method must be called on brokers before use. '
+                'Did you forget to pass the "app" argument to broker\'s '
+                'constructor?'
+            )
         return getattr(self._proxied_instance, name)
 
     def __setattr__(self, name, value):
