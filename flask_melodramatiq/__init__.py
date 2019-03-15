@@ -103,7 +103,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
             broker = self.__broker_factory(**options)
             broker.add_middleware(AppContextMiddleware(app))
             for actor in self._unregistered_lazy_actors:
-                actor.register(broker=broker)
+                actor._register_proxied_instance(broker=broker)
             self._unregistered_lazy_actors = None
             self.__broker_url = broker_url
             self.__app = app
@@ -154,17 +154,17 @@ class LazyActor(_ProxiedInstanceMixin, dramatiq.Actor):
         self.__kw = kw
         actors = getattr(broker, '_unregistered_lazy_actors', None)
         if actors is None:
-            self.register(broker)
+            self._register_proxied_instance(broker)
         else:
             actors.append(self)
-
-    def register(self, broker):
-        self._proxied_instance = dramatiq.Actor(self.__fn, broker=broker, **self.__kw)
 
     def __call__(self, *args, **kwargs):
         if self._proxied_instance:
             return self._proxied_instance(*args, **kwargs)
         return self.__fn(*args, **kwargs)
+
+    def _register_proxied_instance(self, broker):
+        self._proxied_instance = dramatiq.Actor(self.__fn, broker=broker, **self.__kw)
 
 
 class AppContextMiddleware(dramatiq.Middleware):
