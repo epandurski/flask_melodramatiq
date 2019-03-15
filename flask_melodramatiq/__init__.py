@@ -2,15 +2,12 @@ import threading
 import importlib
 import functools
 import dramatiq
+from dramatiq.broker import Broker as AbstractBroker
 from dramatiq.brokers import stub
 
 __all__ = ['LazyActor', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
 
 _broker_classes = {}
-
-
-def _raise_error(e, *args, **kwargs):
-    raise e
 
 
 def _create_broker_class(module_name, class_name, default_url):
@@ -28,6 +25,10 @@ def _create_broker_class(module_name, class_name, default_url):
         ))
     _broker_classes[class_name] = broker_class
     return broker_class
+
+
+def _raise_error(e, *args, **kwargs):
+    raise e
 
 
 class _ProxiedInstanceMixin:
@@ -261,5 +262,5 @@ StubBroker = _create_broker_class(
 )
 
 
-class Broker(_LazyBrokerMixin):
+class Broker(_LazyBrokerMixin, AbstractBroker):
     pass
