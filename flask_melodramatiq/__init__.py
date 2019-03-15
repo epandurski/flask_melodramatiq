@@ -30,16 +30,16 @@ class _ProxiedInstanceMixin:
     """Delegates attribute access to a lazily created instance.
 
     The lazily created instance is held in `self._proxied_instance`.
-    To avoid infinite recursion, the `clear_proxied_instance()` method
-    should be the first thing called in the constructor. Setting
-    `self._proxied_instance` to anything different than `None`
-    prevents any further attribute assignments on `self` (which will
-    go to the proxied instance instead).
+
+    `object.__setattr__(self, '_proxied_instance', None)` should be
+    the first thing executed in the constructor (to avoid infinite
+    recursion).
+
+    Setting `self._proxied_instance` to anything different than `None`
+    prevents any further attribute assignments on `self` (they will go
+    to the proxied instance instead).
 
     """
-
-    def clear_proxied_instance(self):
-        object.__setattr__(self, '_proxied_instance', None)
 
     def __str__(self):
         if self._proxied_instance is None:
@@ -74,7 +74,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
     __registered_config_prefixes = set()
 
     def __init__(self, app=None, config_prefix='DRAMATIQ_BROKER', **options):
-        self.clear_proxied_instance()
+        object.__setattr__(self, '_proxied_instance', None)
         self._unregistered_lazy_actors = []
         if config_prefix in self.__registered_config_prefixes:
             raise RuntimeError(
@@ -149,7 +149,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
 
 class LazyActor(_ProxiedInstanceMixin, dramatiq.Actor):
     def __init__(self, fn, *, broker, **kw):
-        self.clear_proxied_instance()
+        object.__setattr__(self, '_proxied_instance', None)
         self.__fn = fn
         self.__kw = kw
         actors = getattr(broker, '_unregistered_lazy_actors', None)
