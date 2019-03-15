@@ -162,7 +162,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
         options = primary.copy()
         for k, v in options.items():
             if k in secondary and v != secondary[k]:
-                raise RuntimeError(
+                raise ValueError(
                     'Wrong configuration value: {key}={value}. '
                     '{key} should not be overridden for this broker.'.format(
                         key=k,
