@@ -161,21 +161,24 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
             if k.isupper() and k.startswith(prefix)
         }
 
-    def __merge_options(self, primary, secondary):
+    def __merge_options(self, app, primary, secondary):
         options = primary.copy()
         for k, v in options.items():
             if k in secondary and v != secondary[k]:
-                raise ValueError(
-                    'Wrong configuration value: {key}={value}. '
-                    '{key} should not be overridden for this broker.'.format(
-                        key=k,
-                        value=secondary[k],
+                app.logger.warning(
+                    'The configuration setting "%(key)s=%(secondary_value)s" overrides '
+                    'the value fixed in the source code (%(primary_value)s). This '
+                    'could result in incorrect behavior.' % dict(
+                        key='{}_{}'.format(self.__config_prefix, k.upper()),
+                        primary_value=v,
+                        secondary_value=secondary.get(k),
                     ))
         options.update(secondary)
         return options
 
     def __get_configuration(self, app):
         configuration = self.__merge_options(
+            app,
             self.__get_primary_options(),
             self.__get_secondary_options(app),
         )
