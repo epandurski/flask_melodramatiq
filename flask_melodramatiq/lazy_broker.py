@@ -4,8 +4,13 @@ import dramatiq
 import dramatiq.broker
 from dramatiq.brokers.stub import StubBroker
 
-_broker_classes_registry = {}
 _registered_config_prefixes = set()
+_broker_classes_registry = {}
+
+
+def register_broker_class(broker_class):
+    assert issubclass(broker_class, dramatiq.broker.Broker)
+    _broker_classes_registry[broker_class.__name__] = broker_class
 
 
 class ProxiedInstanceMixin:
