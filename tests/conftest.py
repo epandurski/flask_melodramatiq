@@ -9,14 +9,16 @@ from mock import Mock
 def app(request):
     app = flask.Flask(request.module.__name__)
     app.testing = True
-    # app.config['DRAMATIQ_BROKER_URL'] = 'stub://'
-    # app.config['DRAMATIQ_BROKER_CLASS'] = 'StubBroker'
     return app
 
 
-@pytest.fixture
+@pytest.fixture(params=['StubBroker', 'Broker'])
 def broker(app, request):
-    broker = StubBroker()
+    if request.param == 'StubBroker':
+        broker = StubBroker()
+    else:
+        app.config['DRAMATIQ_BROKER_CLASS'] = 'StubBroker'
+        broker = Broker()
     yield broker
     config_prefix = broker._LazyBrokerMixin__config_prefix
     type(broker)._LazyBrokerMixin__registered_config_prefixes.remove(config_prefix)

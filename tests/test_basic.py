@@ -54,20 +54,30 @@ def test_register_task_after_init(app, broker, run_mock):
     run_mock.assert_called_once_with('param1', 'param2')
 
 
-@pytest.mark.skip
 def test_multiple_init(app, broker):
+    # invalid class name
+    app0 = flask.Flask('zero_app')
+    app0.testing = True
+    app0.config['DRAMATIQ_BROKER_CLASS'] = 'InvalidClassName'
+    with pytest.raises(ValueError):
+        broker.init_app(app0)
+
     broker.init_app(app)
     broker.init_app(app)
     broker.init_app(app)
+
+    # second app with the same config
     app2 = flask.Flask('second_app')
     app2.testing = True
-    app2.config['DRAMATIQ_BROKER_URL'] = 'stub://'
+    app2.config = app.config
     assert not [1 for m in broker.middleware if type(m) is MultipleAppsWarningMiddleware]
     broker.init_app(app2)
     assert [1 for m in broker.middleware if type(m) is MultipleAppsWarningMiddleware]
+
+    # second app with a different config
     app3 = flask.Flask('third_app')
     app3.testing = True
-    app3.config['DRAMATIQ_BROKER_URL'] = 'stub://different_url'
+    app3.config['DRAMATIQ_BROKER_URL'] = 'some_url'
     with pytest.raises(RuntimeError):
         broker.init_app(app3)
 
@@ -77,7 +87,8 @@ def test_config_prefix_conflict(app, broker):
         StubBroker()  # same config_prefix
     with pytest.raises(ValueError):
         StubBroker(config_prefix='not_uppercase')
-    second_broker = StubBroker(config_prefix='SECOND_BROKER')
+    second_prefix = 'ANOTHER_{}'.format(type(broker).__name__).upper()
+    second_broker = StubBroker(config_prefix=second_prefix)
     assert broker is not second_broker
     broker.init_app(app)
     second_broker.init_app(app)
