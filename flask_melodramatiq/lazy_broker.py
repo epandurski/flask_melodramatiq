@@ -85,7 +85,13 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         self.__options = options
         self.__configuration = None
         self.__app = None
+
+        # When an actor is defined, broker's `actor_options` attribute
+        # is accessed, which asks the middleware what actor options
+        # are valid. We will delegate this work to a stub broker,
+        # until our broker is ready.
         self.__stub = StubBroker(middleware=options.get('middleware'))
+
         self._unregistered_lazy_actors = []
         if config_prefix == 'DRAMATIQ_BROKER':
             dramatiq.set_broker(self)
