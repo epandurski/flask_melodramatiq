@@ -1,11 +1,12 @@
 import flask
 import dramatiq
 import pytest
-from flask_melodramatiq import LazyActor, StubBroker, AppContextMiddleware, MultipleAppsWarningMiddleware
+from flask_melodramatiq import LazyActor, Broker, StubBroker, AppContextMiddleware, \
+    MultipleAppsWarningMiddleware
 
 
 def test_immediate_init(app, run_mock):
-    broker = StubBroker(app, config_prefix='TEST_IMMEDIATE_INIT_BROKER')
+    broker = StubBroker(app, config_prefix='IMMEDIATE_INIT_BROKER')
 
     @broker.actor
     def task():
@@ -154,3 +155,52 @@ def test_generic_actor(app, broker, run_mock):
     worker.start()
     worker.join()
     run_mock.assert_called_once_with('message')
+
+
+def test_config_override(app, caplog):
+    # passing options to the constructor
+    broker1 = StubBroker(config_prefix='CONFIG_OVERRIDE_BROKER1', some_arg='something')
+    with pytest.raises(TypeError, match=r'some_arg'):
+        broker1.init_app(app)
+
+    # passing options via app.config
+    broker2 = StubBroker(config_prefix='CONFIG_OVERRIDE_BROKER2')
+    app.config['CONFIG_OVERRIDE_BROKER2_SOME_ARG'] = 'something'
+    with pytest.raises(TypeError, match=r'some_arg'):
+        broker2.init_app(app)
+
+    # overriding options via app.config
+    broker3 = StubBroker(config_prefix='CONFIG_OVERRIDE_BROKER3', some_arg='something')
+    app.config['CONFIG_OVERRIDE_BROKER3_SOME_ARG'] = 'something_else'
+    n = len(caplog.records)
+    with pytest.raises(TypeError, match=r'some_arg'):
+        broker3.init_app(app)
+    assert len(caplog.records) == n + 1
+    assert 'something_else' in caplog.text
+
+    # setting the broker class via app.config
+    broker4 = Broker(config_prefix='CONFIG_OVERRIDE_BROKER4')
+    app.config['CONFIG_OVERRIDE_BROKER4_CLASS'] = 'StubBroker'
+    assert type(broker4) is Broker
+    broker4.init_app(app)
+    assert type(broker4) is StubBroker
+
+    # setting the broker class and adding options via app.config
+    broker5 = Broker(config_prefix='CONFIG_OVERRIDE_BROKER5')
+    app.config['CONFIG_OVERRIDE_BROKER5_CLASS'] = 'StubBroker'
+    app.config['CONFIG_OVERRIDE_BROKER5_SOME_ARG'] = 'something'
+    with pytest.raises(TypeError, match=r'some_arg'):
+        broker5.init_app(app)
+
+    # configurable broker class, passing options to the constructor (failure)
+    broker6 = Broker(config_prefix='CONFIG_OVERRIDE_BROKER6', some_arg='something')
+    app.config['CONFIG_OVERRIDE_BROKER6_CLASS'] = 'StubBroker'
+    with pytest.raises(TypeError, match=r'some_arg'):
+        broker6.init_app(app)
+
+    # configurable broker class, passing options to the constructor (success)
+    broker7 = Broker(config_prefix='CONFIG_OVERRIDE_BROKER7', middleware=[])
+    app.config['CONFIG_OVERRIDE_BROKER7_CLASS'] = 'StubBroker'
+    broker7.init_app(app)
+    assert type(broker7) is StubBroker
+    assert len(broker7.middleware) <= 1
