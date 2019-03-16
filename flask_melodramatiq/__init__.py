@@ -14,8 +14,10 @@ def _create_broker_class(module_name, class_name, default_url):
     try:
         module = importlib.import_module(module_name)
     except ImportError as e:
+        error = functools.partial(_raise_error, e)
         broker_class = type(class_name, (), dict(
-            __init__=functools.partial(_raise_error, e),
+            __init__=error,
+            _LazyBrokerMixin__broker_factory=error,
         ))
     else:
         superclass = getattr(module, class_name)
