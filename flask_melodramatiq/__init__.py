@@ -1,7 +1,7 @@
 import importlib
 import functools
 from flask_melodramatiq.lazy_broker import (
-    broker_classes_registry,
+    _broker_classes_registry,
     LazyActor,
     LazyBrokerMixin,
     Broker,
@@ -28,7 +28,7 @@ def register_broker_class(module_name, class_name, default_url):
             _dramatiq_broker_factory=superclass,
             _dramatiq_broker_default_url=default_url,
         ))
-    broker_classes_registry[class_name] = broker_class
+    _broker_classes_registry[class_name] = broker_class
     return broker_class
 
 

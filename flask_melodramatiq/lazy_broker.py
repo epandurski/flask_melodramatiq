@@ -4,7 +4,8 @@ import dramatiq
 import dramatiq.broker
 from dramatiq.brokers.stub import StubBroker
 
-broker_classes_registry = {}
+_broker_classes_registry = {}
+_registered_config_prefixes = set()
 
 
 class ProxiedInstanceMixin:
@@ -54,7 +55,6 @@ class ProxiedInstanceMixin:
 class LazyBrokerMixin(ProxiedInstanceMixin):
     """Makes any of the broker classes defined in `dramatiq` lazy."""
 
-    __registered_config_prefixes = set()
     _dramatiq_broker_default_url = None
 
     def __init__(self, app=None, config_prefix='DRAMATIQ_BROKER', **options):
@@ -64,13 +64,13 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
                 'Invalid configuration prefix: "{}". Configuration prefixes '
                 'should be all uppercase.'.format(config_prefix)
             )
-        if config_prefix in self.__registered_config_prefixes:
+        if config_prefix in _registered_config_prefixes:
             raise RuntimeError(
                 'Can not create a second broker with configuration prefix "{}". '
                 'Did you forget to pass the "config_prefix" argument when '
                 'creating the broker?'.format(config_prefix)
             )
-        self.__registered_config_prefixes.add(config_prefix)
+        _registered_config_prefixes.add(config_prefix)
         self.__config_prefix = config_prefix
         self.__options = options
         self.__configuration = None
@@ -125,7 +125,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         options = self.__options.copy()
         options.pop('class', None)
         class_name = type(self).__name__
-        if class_name in broker_classes_registry:
+        if class_name in _broker_classes_registry:
             options['class'] = class_name
         return options
 
@@ -171,7 +171,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         )
         class_name = configuration.get('class', 'RabbitmqBroker')
         try:
-            broker_class = configuration['class'] = broker_classes_registry[class_name]
+            broker_class = configuration['class'] = _broker_classes_registry[class_name]
         except KeyError:
             raise ValueError(
                 'invalid broker class: {config_prefix}_CLASS={class_name}'.format(
