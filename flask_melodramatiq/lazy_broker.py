@@ -53,7 +53,17 @@ class ProxiedInstanceMixin:
 
 
 class LazyBrokerMixin(ProxiedInstanceMixin):
-    """Makes any of the broker classes defined in `dramatiq` lazy."""
+    """Makes a dramatiq broker classes lazy.
+
+    The lazy broker class must have the following attributes defined:
+
+    * `_dramatiq_broker_factory`: a callable that returns instances of
+      the respective dramatiq broker class.
+
+    * `_dramatiq_broker_default_url`: a string that defines the
+      default broker URL, or `None` if there is none.
+
+    """
 
     _dramatiq_broker_default_url = None
 
@@ -184,6 +194,8 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
 
 
 class LazyActor(ProxiedInstanceMixin, dramatiq.Actor):
+    """A lazily registered actor."""
+
     def __init__(self, fn, *, broker, **kw):
         object.__setattr__(self, '_proxied_instance', None)
         self.__fn = fn
