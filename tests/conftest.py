@@ -1,7 +1,7 @@
 import pytest
 import flask
 import dramatiq
-from flask_melodramatiq import LazyActor, StubBroker
+from flask_melodramatiq import LazyActor, StubBroker, Broker
 from mock import Mock
 
 
@@ -9,13 +9,24 @@ from mock import Mock
 def app(request):
     app = flask.Flask(request.module.__name__)
     app.testing = True
-    app.config['DRAMATIQ_BROKER_URL'] = 'stub://'
     return app
 
 
-@pytest.fixture
+@pytest.fixture(params=['StubBroker', 'Broker'])
 def broker(app, request):
-    broker = StubBroker()
+    if request.param == 'StubBroker':
+        broker = StubBroker()
+    else:
+        app.config['DRAMATIQ_BROKER_CLASS'] = 'StubBroker'
+        broker = Broker()
+    yield broker
+    config_prefix = broker._LazyBrokerMixin__config_prefix
+    type(broker)._LazyBrokerMixin__registered_config_prefixes.remove(config_prefix)
+
+
+@pytest.fixture
+def configurable_broker(app, request):
+    broker = Broker()
     yield broker
     config_prefix = broker._LazyBrokerMixin__config_prefix
     type(broker)._LazyBrokerMixin__registered_config_prefixes.remove(config_prefix)
