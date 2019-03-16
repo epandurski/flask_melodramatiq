@@ -19,7 +19,7 @@ def test_immediate_init(app, run_mock):
 
 
 def test_broker_task(app, broker, broker_task, run_mock):
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match=r'init_app\(\) must be called'):
         broker_task.send()
     broker.init_app(app)
     broker_task.send()
@@ -30,7 +30,7 @@ def test_broker_task(app, broker, broker_task, run_mock):
 
 
 def test_dramatiq_task(app, broker, dramatiq_task, run_mock):
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match=r'init_app\(\) must be called'):
         dramatiq_task.send()
     broker.init_app(app)
     dramatiq_task.send()
@@ -59,7 +59,7 @@ def test_multiple_init(app, broker):
     app0 = flask.Flask('zero_app')
     app0.testing = True
     app0.config['DRAMATIQ_BROKER_CLASS'] = 'InvalidClassName'
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r'[Ii]nvalid broker class'):
         broker.init_app(app0)
 
     broker.init_app(app)
@@ -78,14 +78,25 @@ def test_multiple_init(app, broker):
     app3 = flask.Flask('third_app')
     app3.testing = True
     app3.config['DRAMATIQ_BROKER_URL'] = 'some_url'
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match=r'reconfigure an already configured broker'):
         broker.init_app(app3)
 
 
+def test_invalid_actor_arguments(app, broker):
+    with pytest.raises(TypeError, match='unexpected keyword argument'):
+        @broker.actor(actor_class=None)
+        def task1():
+            pass
+    with pytest.raises(TypeError, match='unexpected keyword argument'):
+        @broker.actor(broker=None)
+        def task2():
+            pass
+
+
 def test_config_prefix_conflict(app, broker):
-    with pytest.raises(RuntimeError):
-        StubBroker()  # same config_prefix
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError, match=r'second broker with configuration prefix'):
+        StubBroker()
+    with pytest.raises(ValueError, match=r'[Ii]nvalid configuration prefix'):
         StubBroker(config_prefix='not_uppercase')
     second_prefix = 'ANOTHER_{}'.format(type(broker).__name__).upper()
     second_broker = StubBroker(config_prefix=second_prefix)
