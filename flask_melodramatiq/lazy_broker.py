@@ -55,7 +55,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
     """Makes any of the broker classes defined in `dramatiq` lazy."""
 
     __registered_config_prefixes = set()
-    __broker_default_url = None
+    _dramatiq_broker_default_url = None
 
     def __init__(self, app=None, config_prefix='DRAMATIQ_BROKER', **options):
         object.__setattr__(self, '_proxied_instance', None)
@@ -91,7 +91,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
             self.__configuration = configuration
             options = configuration.copy()
             self.__class__ = options.pop('class')
-            broker = self.__broker_factory(**options)
+            broker = self._dramatiq_broker_factory(**options)
             broker.add_middleware(AppContextMiddleware(app))
             for actor in self._unregistered_lazy_actors:
                 actor._register_proxied_instance(broker=broker)
@@ -178,8 +178,8 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
                     config_prefix=self.__config_prefix,
                     class_name=class_name,
                 ))
-        if broker_class.__broker_default_url is not None:
-            configuration.setdefault('url', broker_class.__broker_default_url)
+        if broker_class._dramatiq_broker_default_url is not None:
+            configuration.setdefault('url', broker_class._dramatiq_broker_default_url)
         return configuration
 
 

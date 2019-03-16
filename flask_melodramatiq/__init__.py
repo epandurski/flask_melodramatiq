@@ -19,14 +19,14 @@ def register_broker_class(module_name, class_name, default_url):
         raise_import_error = functools.partial(raise_error, e)
         broker_class = type(class_name, (), dict(
             __init__=raise_import_error,
-            _LazyBrokerMixin__broker_factory=raise_import_error,
-            _LazyBrokerMixin__broker_default_url=None,
+            _dramatiq_broker_factory=raise_import_error,
+            _dramatiq_broker_default_url=None,
         ))
     else:
         superclass = getattr(module, class_name)
         broker_class = type(class_name, (LazyBrokerMixin, superclass), dict(
-            _LazyBrokerMixin__broker_factory=superclass,
-            _LazyBrokerMixin__broker_default_url=default_url,
+            _dramatiq_broker_factory=superclass,
+            _dramatiq_broker_default_url=default_url,
         ))
     broker_classes_registry[class_name] = broker_class
     return broker_class
