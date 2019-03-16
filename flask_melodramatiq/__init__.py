@@ -171,7 +171,7 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
                     'could result in incorrect behavior.' % dict(
                         key='{}_{}'.format(self.__config_prefix, k.upper()),
                         primary_value=v,
-                        secondary_value=secondary.get(k),
+                        secondary_value=secondary[k],
                     ))
         options.update(secondary)
         return options
