@@ -1,3 +1,4 @@
+import logging
 import threading
 import importlib
 import functools
@@ -165,10 +166,10 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
         options = primary.copy()
         for k, v in options.items():
             if k in secondary and v != secondary[k]:
-                app.logger.warning(
+                logging.getLogger(__name__).warning(
                     'The configuration setting "%(key)s=%(secondary_value)s" overrides '
-                    'the value fixed in the source code (%(primary_value)s). This '
-                    'could result in incorrect behavior.' % dict(
+                    'the value in the source code (%(primary_value)s). This could '
+                    'result in incorrect behavior.' % dict(
                         key='{}_{}'.format(self.__config_prefix, k.upper()),
                         primary_value=v,
                         secondary_value=secondary[k],
@@ -240,7 +241,7 @@ class AppContextMiddleware(dramatiq.Middleware):
 
 class MultipleAppsWarningMiddleware(dramatiq.Middleware):
     def after_process_boot(self, broker):
-        broker.logger.warning(
+        logging.getLogger(__name__).warning(
             "%s is used by more than one flask application. "
             "Actor's application context may be set incorrectly." % broker
         )
