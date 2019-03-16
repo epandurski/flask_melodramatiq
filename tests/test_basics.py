@@ -1,8 +1,7 @@
 import flask
 import dramatiq
 import pytest
-from flask_melodramatiq import LazyActor, Broker, StubBroker, AppContextMiddleware, \
-    MultipleAppsWarningMiddleware
+from flask_melodramatiq import LazyActor, Broker, StubBroker
 
 
 def test_immediate_init(app, run_mock):
@@ -71,9 +70,9 @@ def test_multiple_init(app, broker):
     app2 = flask.Flask('second_app')
     app2.testing = True
     app2.config = app.config
-    assert not [1 for m in broker.middleware if type(m) is MultipleAppsWarningMiddleware]
+    assert not [1 for m in broker.middleware if type(m).__name__ == 'MultipleAppsWarningMiddleware']
     broker.init_app(app2)
-    assert [1 for m in broker.middleware if type(m) is MultipleAppsWarningMiddleware]
+    assert [1 for m in broker.middleware if type(m).__name__ == 'MultipleAppsWarningMiddleware']
 
     # second app with a different config
     app3 = flask.Flask('third_app')
@@ -128,7 +127,7 @@ def test_flask_app_context(app, broker, run_mock):
         run_mock()
 
     broker.init_app(app)
-    assert [1 for m in broker.middleware if type(m) is AppContextMiddleware]
+    assert [1 for m in broker.middleware if type(m).__name__ == 'AppContextMiddleware']
     task.send()
     worker = dramatiq.Worker(broker)
     worker.start()
