@@ -163,13 +163,25 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
             if k.isupper() and k.startswith(prefix)
         }
 
-    def __merge_options(self, app, primary, secondary):
-        options = primary.copy()
+    def __merge_options(self, primary, secondary):
+        pclass = primary.get('class')
+        sclass = secondary.get('class')
+        is_class_overridden = (
+            pclass != sclass
+            and pclass is not None
+            and sclass is not None
+        )
+        if is_class_overridden:
+            # When the broker class is overridden, all primary options
+            # other than "class" and "middleware" are irrelevant.
+            options = {k: v for k, v in primary.items() if k in ['class', 'middleware']}
+        else:
+            options = primary.copy()
         for k, v in options.items():
             if k in secondary and v != secondary[k]:
                 logging.getLogger(__name__).warning(
                     'The configuration setting "%(key)s=%(secondary_value)s" overrides '
-                    'the value in the source code (%(primary_value)s). This could '
+                    'the value fixed in the source code (%(primary_value)s). This could '
                     'result in incorrect behavior.' % dict(
                         key='{}_{}'.format(self.__config_prefix, k.upper()),
                         primary_value=v,
@@ -180,7 +192,6 @@ class _LazyBrokerMixin(_ProxiedInstanceMixin):
 
     def __get_configuration(self, app):
         configuration = self.__merge_options(
-            app,
             self.__get_primary_options(),
             self.__get_secondary_options(app),
         )
