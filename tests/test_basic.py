@@ -204,3 +204,9 @@ def test_config_override(app, caplog):
     broker7.init_app(app)
     assert type(broker7) is StubBroker
     assert len(broker7.middleware) <= 1
+
+
+def test_import_error(app):
+    from flask_melodramatiq import RedisBroker
+    with pytest.raises(ImportError):
+        RedisBroker(config_prefix='IMPORT_ERROR_BROKER')
