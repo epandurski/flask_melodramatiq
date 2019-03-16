@@ -81,10 +81,10 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
                 'creating the broker?'.format(config_prefix)
             )
         _registered_config_prefixes.add(config_prefix)
+        self.__app = app
         self.__config_prefix = config_prefix
         self.__options = options
         self.__configuration = None
-        self.__app = None
 
         # When an actor is defined, broker's `actor_options` attribute
         # is accessed, which asks the middleware what actor options
