@@ -7,6 +7,8 @@ import dramatiq.brokers.stub
 _registered_config_prefixes = set()
 _broker_classes_registry = {}
 
+DEFAULT_CLASS_NAME = 'RabbitmqBroker'
+
 
 def register_broker_class(broker_class):
     assert issubclass(broker_class, dramatiq.broker.Broker)
@@ -192,7 +194,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
             self.__get_primary_options(),
             self.__get_secondary_options(app),
         )
-        class_name = configuration.get('class', 'RabbitmqBroker')
+        class_name = configuration.get('class', DEFAULT_CLASS_NAME)
         try:
             broker_class = configuration['class'] = _broker_classes_registry[class_name]
         except KeyError:
