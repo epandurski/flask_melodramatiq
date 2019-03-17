@@ -2,7 +2,7 @@ import logging
 import threading
 import dramatiq
 import dramatiq.broker
-from dramatiq.brokers.stub import StubBroker
+import dramatiq.brokers.stub
 
 _registered_config_prefixes = set()
 _broker_classes_registry = {}
@@ -95,7 +95,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         # is accessed, which asks the middleware what actor options
         # are valid. We will delegate this work to a stub broker,
         # until our broker is ready.
-        self.__stub = StubBroker(middleware=options.get('middleware'))
+        self.__stub = dramatiq.brokers.stub.StubBroker(middleware=options.get('middleware'))
 
         self._unregistered_lazy_actors = []
         if config_prefix == 'DRAMATIQ_BROKER':
