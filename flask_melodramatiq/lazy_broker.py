@@ -58,7 +58,7 @@ class ProxiedInstanceMixin:
 
 
 class LazyBrokerMixin(ProxiedInstanceMixin):
-    """Makes a dramatiq broker classes lazy.
+    """Makes a dramatiq broker class lazy.
 
     The lazy broker class must have the following attributes defined:
 
