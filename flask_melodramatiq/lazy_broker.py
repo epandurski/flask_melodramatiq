@@ -13,6 +13,7 @@ DEFAULT_CLASS_NAME = 'RabbitmqBroker'
 def register_broker_class(broker_class):
     class_name = broker_class.__name__
     assert issubclass(broker_class, dramatiq.broker.Broker)
+    assert issubclass(broker_class, LazyBrokerMixin)
     assert class_name != 'Broker'
     assert class_name not in _broker_classes_registry
     _broker_classes_registry[class_name] = broker_class
