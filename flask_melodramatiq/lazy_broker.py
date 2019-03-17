@@ -75,6 +75,10 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
     * `_dramatiq_broker_default_url`: a string that defines the
       default broker URL, or `None` if there is none.
 
+    The class `Broker` is the only exception to this rule. It
+    represents a broker of dynamically configurable type, and can not
+    be registered with `register_broker_class`.
+
     """
 
     _dramatiq_broker_default_url = None
@@ -264,4 +268,4 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
 
 
 class Broker(LazyBrokerMixin, dramatiq.broker.Broker):
-    """A broker of configurable type."""
+    """A broker of dynamically configurable type."""
