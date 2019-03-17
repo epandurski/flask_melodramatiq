@@ -58,12 +58,14 @@ class ProxiedInstanceMixin:
 
 
 class LazyBrokerMixin(ProxiedInstanceMixin):
-    """Makes a dramatiq broker class lazy.
+    """Turns a regular dramatiq broker class into a lazy broker class.
 
-    The lazy broker class must have the following attributes defined:
+    The derived lazy broker class should be registered with the
+    `register_broker_class` function. The derived lazy broker class
+    should define the following additional attributes:
 
     * `_dramatiq_broker_factory`: a callable that returns instances of
-      the respective dramatiq broker class.
+      the regular dramatiq broker class.
 
     * `_dramatiq_broker_default_url`: a string that defines the
       default broker URL, or `None` if there is none.
