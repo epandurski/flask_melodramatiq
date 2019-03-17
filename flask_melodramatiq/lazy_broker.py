@@ -8,6 +8,7 @@ _registered_config_prefixes = set()
 _broker_classes_registry = {}
 
 DEFAULT_CLASS_NAME = 'RabbitmqBroker'
+DEFAULT_CONFIG_PREFIX = 'DRAMATIQ_BROKER'
 
 
 def register_broker_class(broker_class):
@@ -84,7 +85,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
 
     _dramatiq_broker_default_url = None
 
-    def __init__(self, app=None, config_prefix='DRAMATIQ_BROKER', **options):
+    def __init__(self, app=None, config_prefix=DEFAULT_CONFIG_PREFIX, **options):
         object.__setattr__(self, '_proxied_instance', None)
         if not config_prefix.isupper():
             raise ValueError(
@@ -110,7 +111,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         self.__stub = dramatiq.brokers.stub.StubBroker(middleware=options.get('middleware'))
 
         self._unregistered_lazy_actors = []
-        if config_prefix == 'DRAMATIQ_BROKER':
+        if config_prefix == DEFAULT_CONFIG_PREFIX:
             dramatiq.set_broker(self)
         if app is not None:
             self.init_app(app)
@@ -268,5 +269,5 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
         )
 
 
-class Broker(LazyBrokerMixin, dramatiq.broker.Broker):
+class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
     """A broker of dynamically configurable type."""
