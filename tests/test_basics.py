@@ -204,6 +204,12 @@ def test_config_override(app, caplog):
     assert type(broker7) is StubBroker
     assert len(broker7.middleware) <= 1
 
+    # alter broker middleware in app configuration
+    broker8 = StubBroker(config_prefix='CONFIG_OVERRIDE_BROKER8')
+    app.config['CONFIG_OVERRIDE_BROKER8_MIDDLEWARE'] = []
+    with pytest.raises(RuntimeError, match=r'[Ii]nvalid configuration option'):
+        broker8.init_app(app)
+
 
 def test_import_error(app):
     from flask_melodramatiq import RedisBroker

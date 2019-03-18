@@ -165,11 +165,17 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
 
     def __get_secondary_options(self, app):
         prefix = '{}_'.format(self.__config_prefix)
-        return {
+        options = {
             k[len(prefix):].lower(): v
             for k, v in app.config.items()
             if k.isupper() and k.startswith(prefix)
         }
+        if 'middleware' in options:
+            raise RuntimeError(
+                'Invalid configuration option: {}_MIDDLEWARE. Broker middleware can '
+                'not be altered in app configuration.'.format(self.__config_prefix)
+            )
+        return options
 
     def __merge_options(self, primary, secondary):
         pclass = primary.get('class')
