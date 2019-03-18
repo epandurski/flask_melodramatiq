@@ -173,11 +173,13 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         if 'middleware' in options:
             value = options.pop('middleware')
             logging.getLogger(__name__).warning(
-                'Ignored configuration setting: "%(key)s=%(value)s". Broker '
-                'middleware can not be altered in app configuration.' % dict(
+                'Ignored configuration setting: "%(key)s=%(value)s". '
+                'Broker middleware can not be altered in app configuration.',
+                dict(
                     key='{}_MIDDLEWARE'.format(self.__config_prefix),
                     value=value,
-                ))
+                ),
+            )
         return options
 
     def __merge_options(self, primary, secondary):
@@ -199,11 +201,13 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
                 logging.getLogger(__name__).warning(
                     'The configuration setting "%(key)s=%(secondary_value)s" overrides '
                     'the value fixed in the source code (%(primary_value)s). This could '
-                    'result in incorrect behavior.' % dict(
+                    'result in incorrect behavior.',
+                    dict(
                         key='{}_{}'.format(self.__config_prefix, k.upper()),
                         primary_value=v,
                         secondary_value=secondary[k],
-                    ))
+                    ),
+                )
         options.update(secondary)
         return options
 
@@ -273,8 +277,11 @@ class AppContextMiddleware(dramatiq.Middleware):
 class MultipleAppsWarningMiddleware(dramatiq.Middleware):
     def after_process_boot(self, broker):
         logging.getLogger(__name__).warning(
-            "%s is used by more than one flask application. "
-            "Actor's application context may be set incorrectly." % broker
+            "%(broker)s is used by more than one flask application. "
+            "Actor's application context may be set incorrectly.",
+            dict(
+                broker=broker
+            ),
         )
 
 

@@ -217,3 +217,11 @@ def test_import_error(app):
     from flask_melodramatiq import RedisBroker
     with pytest.raises(ImportError):
         RedisBroker(config_prefix='IMPORT_ERROR_BROKER')
+
+
+def test_after_process_boot_warning(broker, caplog):
+    from flask_melodramatiq.lazy_broker import MultipleAppsWarningMiddleware
+    n = len(caplog.records)
+    MultipleAppsWarningMiddleware().after_process_boot(broker)
+    assert len(caplog.records) == n + 1
+    assert 'application context may be set incorrectly' in caplog.text
