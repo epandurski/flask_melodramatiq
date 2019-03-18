@@ -207,8 +207,10 @@ def test_config_override(app, caplog):
     # alter broker middleware in app configuration
     broker8 = StubBroker(config_prefix='CONFIG_OVERRIDE_BROKER8')
     app.config['CONFIG_OVERRIDE_BROKER8_MIDDLEWARE'] = []
-    with pytest.raises(RuntimeError, match=r'[Ii]nvalid configuration option'):
-        broker8.init_app(app)
+    n = len(caplog.records)
+    broker8.init_app(app)
+    assert len(caplog.records) == n + 1
+    assert 'Ignored configuration setting' in caplog.text
 
 
 def test_import_error(app):
