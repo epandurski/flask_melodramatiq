@@ -2,6 +2,32 @@ import flask
 import dramatiq
 import pytest
 from flask_melodramatiq import LazyActor, Broker, StubBroker
+from flask_melodramatiq.lazy_broker import MultipleAppsWarningMiddleware
+
+
+def test_actor_attr_access(app, broker, run_mock):
+    @broker.actor()
+    def task():
+        run_mock()
+
+    assert isinstance(str(task), str)
+    assert isinstance(repr(task), str)
+    task.some_random_attribute = 1
+    del task.some_random_attribute
+    with pytest.raises(RuntimeError, match=r'init_app\(\) must be called'):
+        task.some_random_attribute
+    task()
+    run_mock.assert_called_once()
+    run_mock.reset_mock()
+    broker.init_app(app)
+    assert isinstance(str(task), str)
+    assert isinstance(repr(task), str)
+    task.other_random_attribute = 2
+    del task.other_random_attribute
+    with pytest.raises(AttributeError):
+        task.other_random_attribute
+    task()
+    run_mock.assert_called_once()
 
 
 def test_immediate_init(app, run_mock):
@@ -70,9 +96,9 @@ def test_multiple_init(app, broker):
     app2 = flask.Flask('second_app')
     app2.testing = True
     app2.config = app.config
-    assert not [1 for m in broker.middleware if type(m).__name__ == 'MultipleAppsWarningMiddleware']
+    assert not [1 for m in broker.middleware if type(m) is MultipleAppsWarningMiddleware]
     broker.init_app(app2)
-    assert [1 for m in broker.middleware if type(m).__name__ == 'MultipleAppsWarningMiddleware']
+    assert [1 for m in broker.middleware if type(m) is MultipleAppsWarningMiddleware]
 
     # second app with a different config
     app3 = flask.Flask('third_app')
@@ -220,7 +246,6 @@ def test_import_error(app):
 
 
 def test_after_process_boot_warning(broker, caplog):
-    from flask_melodramatiq.lazy_broker import MultipleAppsWarningMiddleware
     n = len(caplog.records)
     MultipleAppsWarningMiddleware().after_process_boot(broker)
     assert len(caplog.records) == n + 1
