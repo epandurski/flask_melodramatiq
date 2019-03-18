@@ -41,9 +41,9 @@ class ProxiedInstanceMixin:
         return str(self._proxied_instance)
 
     def __repr__(self):
-        if self._proxied_instance:
-            return repr(self._proxied_instance)
-        return object.__repr__(self)
+        if self._proxied_instance is None:
+            return object.__repr__(self)
+        return repr(self._proxied_instance)
 
     def __getattr__(self, name):
         if self._proxied_instance is None:
