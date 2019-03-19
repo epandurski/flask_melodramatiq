@@ -1,7 +1,6 @@
 import logging
 import threading
 import dramatiq
-import dramatiq.broker
 import dramatiq.brokers.stub
 
 _registered_config_prefixes = set()
@@ -13,7 +12,7 @@ DEFAULT_CONFIG_PREFIX = 'DRAMATIQ_BROKER'
 
 def register_broker_class(broker_class):
     class_name = broker_class.__name__
-    assert issubclass(broker_class, dramatiq.broker.Broker)
+    assert issubclass(broker_class, dramatiq.Broker)
     assert issubclass(broker_class, LazyBrokerMixin)
     assert class_name != 'Broker'
     assert class_name not in _broker_classes_registry
@@ -244,9 +243,9 @@ class LazyActor(ProxiedInstanceMixin, dramatiq.Actor):
             actors.append(self)
 
     def __call__(self, *args, **kwargs):
-        if self._proxied_instance:
-            return self._proxied_instance(*args, **kwargs)
-        return self.__fn(*args, **kwargs)
+        if self._proxied_instance is None:
+            return self.__fn(*args, **kwargs)
+        return self._proxied_instance(*args, **kwargs)
 
     def _register_proxied_instance(self, broker):
         self._proxied_instance = dramatiq.Actor(self.__fn, broker=broker, **self.__kw)
