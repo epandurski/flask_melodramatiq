@@ -38,7 +38,7 @@ def raise_error(e, *args, **kwargs):
 
 
 # We change the default actor class used by the `dramatiq.actor`
-# decorator to `LazyActor`. This should be save because for regular
+# decorator to `LazyActor`. This should be safe because for regular
 # brokers and "init_app"-ed lazy brokers `LazyActor` behaves exactly
 # as `dramatiq.Actor`.
 dramatiq.actor.__kwdefaults__['actor_class'] = LazyActor
