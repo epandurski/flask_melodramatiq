@@ -48,7 +48,7 @@ def broker_task(broker, run_mock):
 
 @pytest.fixture
 def dramatiq_task(broker, run_mock):
-    @dramatiq.actor(broker=broker, actor_class=LazyActor)
+    @dramatiq.actor(broker=broker)
     def dramatiq_task(*args, **kwargs):
         run_mock(*args, **kwargs)
     return dramatiq_task

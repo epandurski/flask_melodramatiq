@@ -1,8 +1,8 @@
 import flask
 import dramatiq
 import pytest
-from flask_melodramatiq import LazyActor, Broker, StubBroker
-from flask_melodramatiq.lazy_broker import MultipleAppsWarningMiddleware
+from flask_melodramatiq import Broker, StubBroker
+from flask_melodramatiq.lazy_broker import LazyActor, MultipleAppsWarningMiddleware
 
 
 def test_actor_attr_access(app, broker, run_mock):
@@ -165,7 +165,6 @@ def test_generic_actor(app, broker, run_mock):
     class AbstractTask(dramatiq.GenericActor):
         class Meta:
             abstract = True
-            actor_class = LazyActor
 
         def perform(self, arg):
             self.run(arg)

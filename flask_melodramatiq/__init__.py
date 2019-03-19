@@ -1,5 +1,6 @@
 import importlib
 import functools
+import dramatiq
 from flask_melodramatiq.lazy_broker import (
     register_broker_class,
     LazyActor,
@@ -7,7 +8,7 @@ from flask_melodramatiq.lazy_broker import (
     Broker,
 )
 
-__all__ = ['LazyActor', 'Broker', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
+__all__ = ['Broker', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
 
 
 def create_broker_class(module_name, class_name, default_url):
@@ -34,6 +35,13 @@ def create_broker_class(module_name, class_name, default_url):
 
 def raise_error(e, *args, **kwargs):
     raise e
+
+
+# We change the default actor class used by the `dramatiq.actor`
+# decorator to `LazyActor`. This should be save because for regular
+# brokers and "init_app"-ed lazy brokers `LazyActor` behaves exactly
+# as `dramatiq.Actor`.
+dramatiq.actor.__kwdefaults__['actor_class'] = LazyActor
 
 
 RabbitmqBroker = create_broker_class(
