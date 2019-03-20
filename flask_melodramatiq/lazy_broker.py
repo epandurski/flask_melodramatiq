@@ -47,7 +47,7 @@ class ProxiedInstanceMixin:
     def __getattr__(self, name):
         if self._proxied_instance is None:
             raise RuntimeError(
-                'init_app() must be called on brokers before use. '
+                'init_app() must be called on lazy brokers before use. '
                 'Did you forget to pass the "app" to broker\'s constructor?'
             )
         return getattr(self._proxied_instance, name)
@@ -281,4 +281,4 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
 
 
 class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
-    """A broker of dynamically configurable type."""
+    """A lazy broker of dynamically configurable type."""
