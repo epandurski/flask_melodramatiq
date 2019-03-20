@@ -105,8 +105,6 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         self.__stub = dramatiq.brokers.stub.StubBroker(middleware=options.get('middleware'))
 
         self._unregistered_lazy_actors = []
-        if config_prefix == DEFAULT_CONFIG_PREFIX:
-            dramatiq.set_broker(self)
         if app is not None:
             self.init_app(app)
 
