@@ -11,7 +11,7 @@ from flask_melodramatiq.lazy_broker import (
 __all__ = ['Broker', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
 
 
-def create_broker_class(module_name, class_name, default_url):
+def create_broker_class(module_name, class_name):
     try:
         module = importlib.import_module(module_name)
     except ImportError as e:
@@ -21,13 +21,11 @@ def create_broker_class(module_name, class_name, default_url):
         broker_class = type(class_name, (Broker,), dict(
             __init__=raise_import_error,
             _dramatiq_broker_factory=raise_import_error,
-            _dramatiq_broker_default_url=None,
         ))
     else:
         superclass = getattr(module, class_name)
         broker_class = type(class_name, (LazyBrokerMixin, superclass), dict(
             _dramatiq_broker_factory=superclass,
-            _dramatiq_broker_default_url=default_url,
         ))
     register_broker_class(broker_class)
     return broker_class
@@ -47,19 +45,16 @@ dramatiq.actor.__kwdefaults__['actor_class'] = LazyActor
 RabbitmqBroker = create_broker_class(
     module_name='dramatiq.brokers.rabbitmq',
     class_name='RabbitmqBroker',
-    default_url='amqp://127.0.0.1:5672',
 )
 
 
 RedisBroker = create_broker_class(
     module_name='dramatiq.brokers.redis',
     class_name='RedisBroker',
-    default_url='redis://127.0.0.1:6379/0',
 )
 
 
 StubBroker = create_broker_class(
     module_name='dramatiq.brokers.stub',
     class_name='StubBroker',
-    default_url=None,
 )

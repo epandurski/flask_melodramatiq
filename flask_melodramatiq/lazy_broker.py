@@ -68,21 +68,16 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
 
     The derived lazy broker class should be registered with the
     `register_broker_class` function. The derived lazy broker class
-    should define the following additional attributes:
+    should define the following additional attribute:
 
     * `_dramatiq_broker_factory`: a callable that returns instances of
       the regular dramatiq broker class.
-
-    * `_dramatiq_broker_default_url`: a string that defines the
-      default broker URL, or `None` if there is none.
 
     The class `Broker` is the only exception to this rule. It
     represents a broker of dynamically configurable type, and can not
     be registered with `register_broker_class`.
 
     """
-
-    _dramatiq_broker_default_url = None
 
     def __init__(self, app=None, config_prefix=DEFAULT_CONFIG_PREFIX, **options):
         object.__setattr__(self, '_proxied_instance', None)
@@ -217,15 +212,13 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         )
         class_name = configuration.get('class', DEFAULT_CLASS_NAME)
         try:
-            broker_class = configuration['class'] = _broker_classes_registry[class_name]
+            configuration['class'] = _broker_classes_registry[class_name]
         except KeyError:
             raise ValueError(
                 'invalid broker class: {config_prefix}_CLASS={class_name}'.format(
                     config_prefix=self.__config_prefix,
                     class_name=class_name,
                 ))
-        if broker_class._dramatiq_broker_default_url is not None:
-            configuration.setdefault('url', broker_class._dramatiq_broker_default_url)
         return configuration
 
 
