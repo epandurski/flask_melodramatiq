@@ -17,8 +17,8 @@ Release v\ |release|. (:doc:`installation`, :doc:`api`, `Source Code`_)
 **Flask-Melodramatiq** is a Flask extension that adds support for the
 `dramatiq` task processing library.
 
-`dramatiq` is a great library, and Flask-Melodramatiq tries very hard
-not to force you to change the way you interact with
+`dramatiq` is a great library, and Flask-Melodramatiq tries hard not
+to force you to change the way you interact with
 it. Flask-Melodramatiq defines thin wrappers around the broker types
 available in dramatiq, so that all the power of dramatiq's API remains
 available to you.
