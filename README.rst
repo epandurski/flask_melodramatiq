@@ -2,9 +2,9 @@ Flask-Melodramatiq
 ==================
 
 **Flask-Melodramatiq** is a Flask extension that adds support for the
-`dramatiq` task processing library.
+`dramatiq`_ task processing library.
 
-`dramatiq` is a great library, and Flask-Melodramatiq tries hard not
+`dramatiq`_ is a great library, and Flask-Melodramatiq tries hard not
 to force you to change the way you interact with
 it. Flask-Melodramatiq defines thin wrappers around the broker types
 available in dramatiq, so that all the power of dramatiq's API remains
@@ -43,20 +43,20 @@ or, if you prefer the Flask application factory pattern::
       return app
 
 In those examples, the ``broker`` instance that we created (we call it
-a "lazy broker") is a genuine `dramatiq` broker, and can be used
+a "lazy broker") is a genuine `dramatiq`_ broker, and can be used
 anywhere where a "native" broker can be used. (It has
-:class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker` as a superclass!)
-Lazy brokers are thin wrappers which add several important features:
+`dramatiq.brokers.rabbitmq.RabbitmqBroker` as a superclass!)  Lazy
+brokers are thin wrappers which add several important features:
 
 1. They honor the settings in the Flask application configuration.
 
-2. :meth:`init_app` can be called on them *before or after* the
+2. ``init_app`` can be called on them *before or after* the
    actors have been defined.
 
 3. The Flask application context is correctly set during the execution
    of the tasks.
 
-4. They add few convenience methods (see `api`).
+4. They add few convenience methods.
 
 You can change the configuration options for your broker by passing
 keyword arguments to the constructor, or by setting corresponding
@@ -90,3 +90,4 @@ You can read the docs `here`_.
 
 
 .. _here: https://flask-melodramatiq.readthedocs.io/en/latest/
+.. _dramatiq: https://github.com/Bogdanp/dramatiq
