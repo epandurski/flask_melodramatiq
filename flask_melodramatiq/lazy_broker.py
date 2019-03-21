@@ -323,7 +323,7 @@ class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
     * ``"StubBroker"``
 
     For example, if *config_prefix* is the defaut one, the
-    configuration setting: ``REDIS_BROKER_CLASS="RedisBroker"``
+    configuration setting: ``DRAMATIQ_BROKER_CLASS="RedisBroker"``
     specifies that the type of the broker should be
     :class:`~RedisBroker`.
     """,
