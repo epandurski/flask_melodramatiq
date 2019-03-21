@@ -19,8 +19,8 @@ LAZY_BROKER_DOCSTRING_TEMPLATE = """{description}
        of the wrapped `dramatiq` broker class.
 
     In addition to all the methods defined for
-    :class:`~dramatiq.Broker` instances, the following methods are
-    available:
+    :class:`~dramatiq.Broker` instances, the few more methods are
+    available.
 """
 
 
