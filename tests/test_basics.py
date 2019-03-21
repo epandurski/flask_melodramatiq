@@ -239,9 +239,13 @@ def test_config_override(app, caplog):
 
 
 def test_import_error(app):
-    from flask_melodramatiq import RedisBroker
+    from flask_melodramatiq import create_broker_class
+    NonExistingBroker = create_broker_class(
+        module_name='non_existing_modlule',
+        class_name='NonExistingBroker',
+    )
     with pytest.raises(ImportError):
-        RedisBroker(config_prefix='IMPORT_ERROR_BROKER')
+        NonExistingBroker(config_prefix='IMPORT_ERROR_BROKER')
 
 
 def test_after_process_boot_warning(broker, caplog):
