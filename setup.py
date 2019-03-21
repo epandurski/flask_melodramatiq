@@ -26,6 +26,7 @@ setup(
     platforms='any',
     setup_requires=pytest_runner,
     install_requires=[
+        'Flask>=1.0',
         'dramatiq>=1.5',
     ],
     tests_require=[
