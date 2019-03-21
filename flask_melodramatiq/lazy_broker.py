@@ -133,6 +133,14 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
             app.extensions = {}
         app.extensions[self.__config_prefix.lower()] = self
 
+    def set_default(self):
+        """Configure this broker instance to be the global broker instance.
+
+        Calls :func:`dramatiq.set_broker` internally.
+        """
+
+        dramatiq.set_broker(self)
+
     def actor(self, fn=None, **kw):
         for kwarg in ['broker', 'actor_class']:
             if kwarg in kw:

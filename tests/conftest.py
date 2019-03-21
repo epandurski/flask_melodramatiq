@@ -20,7 +20,7 @@ def broker(app, request):
     else:
         app.config['DRAMATIQ_BROKER_CLASS'] = 'StubBroker'
         broker = Broker()
-    dramatiq.set_broker(broker)
+    broker.set_default()
     yield broker
     config_prefix = broker._LazyBrokerMixin__config_prefix
     _registered_config_prefixes.remove(config_prefix)
