@@ -20,7 +20,7 @@ Release v\ |release|. (:doc:`installation`, :doc:`api`, `Source Code`_)
 `dramatiq` is a great library, and Flask-Melodramatiq tries very hard
 not to force you to change the way you interact with
 it. Flask-Melodramatiq defines thin wrappers around the broker types
-available in dramatiq, while all the power of dramatiq's API remains
+available in dramatiq, so that all the power of dramatiq's API remains
 available to you.
 
 For example::
