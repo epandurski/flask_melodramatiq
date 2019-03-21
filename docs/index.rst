@@ -92,7 +92,7 @@ You can even instantiate a broker of dynamically configurable type::
 
   broker = Broker()  # Broker's type is not fixed
 
-and then set the type in the app config::
+and then specify the type in the app config::
 
    DRAMATIQ_BROKER_CLASS = 'StubBroker'
 
