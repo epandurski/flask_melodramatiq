@@ -10,9 +10,12 @@ Release v\ |release|. (:doc:`installation`, :doc:`api`, `Source Code`_)
 
 .. _Source Code: https://github.com/epandurski/flask_melodramatiq
 
+.. image:: https://img.shields.io/badge/License-MIT-yellow.svg
+   :target: https://opensource.org/licenses/MIT
+
 
 **Flask-Melodramatiq** is a Flask extension that adds support for the
- `dramatiq` task processing library.
+`dramatiq` task processing library.
 
 `dramatiq` is a great library, and Flask-Melodramatiq tries very hard
 not to change the way you interact with it. Flask-Melodramatiq defines
