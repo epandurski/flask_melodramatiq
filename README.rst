@@ -45,7 +45,7 @@ or, if you prefer the Flask application factory pattern::
 In those examples, the ``broker`` instance that we created (we call it
 a "lazy broker") is a genuine `dramatiq`_ broker, and can be used
 anywhere where a "native" broker can be used. (It has
-`dramatiq.brokers.rabbitmq.RabbitmqBroker` as a superclass!)  Lazy
+``dramatiq.brokers.rabbitmq.RabbitmqBroker`` as a superclass!)  Lazy
 brokers are thin wrappers which add several important features:
 
 1. They honor the settings in the Flask application configuration.
