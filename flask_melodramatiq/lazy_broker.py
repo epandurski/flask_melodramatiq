@@ -17,6 +17,10 @@ LAZY_BROKER_DOCSTRING_TEMPLATE = """{description}
 
     :param options: Keyword arguments to be passed to the constructor
        of the wrapped `dramatiq` broker class.
+
+    In addition to all the methods defined for
+    :class:`~dramatiq.Broker` instances, the following methods are
+    available:
 """
 
 

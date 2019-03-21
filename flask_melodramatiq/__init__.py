@@ -49,7 +49,7 @@ RabbitmqBroker = create_broker_class(
     module_name='dramatiq.brokers.rabbitmq',
     class_name='RabbitmqBroker',
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
-        description='A lazy broker wrapping :class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker`.\n',
+        description='A lazy broker wrapping a :class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker`.\n',
     ),
 )
 
@@ -58,7 +58,7 @@ RedisBroker = create_broker_class(
     module_name='dramatiq.brokers.redis',
     class_name='RedisBroker',
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
-        description='A lazy broker wrapping :class:`~dramatiq.brokers.redis.RedisBroker`.\n',
+        description='A lazy broker wrapping a :class:`~dramatiq.brokers.redis.RedisBroker`.\n',
     ),
 )
 
@@ -67,6 +67,6 @@ StubBroker = create_broker_class(
     module_name='dramatiq.brokers.stub',
     class_name='StubBroker',
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
-        description='A lazy broker wrapping :class:`~dramatiq.brokers.stub.StubBroker`.\n',
+        description='A lazy broker wrapping a :class:`~dramatiq.brokers.stub.StubBroker`.\n',
     ),
 )
