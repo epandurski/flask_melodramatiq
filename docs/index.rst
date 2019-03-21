@@ -6,6 +6,11 @@
 Welcome to Flask-Melodramatiq's documentation!
 ==============================================
 
+Release v\ |release|. (:doc:`installation`, :doc:`api`, `Source Code`_)
+
+.. _Source Code: https://github.com/epandurski/flask_melodramatiq
+
+
 **Flask-Melodramatiq** is a Flask extension that adds support for the
  `dramatiq` task processing library.
 
@@ -95,4 +100,6 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   installation
    api
+   Source Code <https://github.com/epandurski/flask_melodramatiq>
