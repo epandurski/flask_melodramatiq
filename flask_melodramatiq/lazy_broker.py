@@ -127,7 +127,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         with this broker. A broker can not be used in the context of
         an application unless it is initialized that way.
 
-        :func:`init_app` is called automatically if an ``app``
+        :meth:`init_app` is called automatically if an ``app``
         argument is passed to the constructor.
 
         """
