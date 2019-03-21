@@ -5,13 +5,13 @@ API Reference
 
 
 .. autoclass:: Broker
-   :members:
+   :members: init_app, set_default, actor
 
 .. autoclass:: RabbitmqBroker
-   :members:
+   :members: init_app, set_default, actor
 
 .. autoclass:: RedisBroker
-   :members:
+   :members: init_app, set_default, actor
 
 .. autoclass:: StubBroker
-   :members:
+   :members: init_app, set_default, actor

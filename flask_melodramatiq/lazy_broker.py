@@ -8,6 +8,16 @@ _broker_classes_registry = {}
 
 DEFAULT_CLASS_NAME = 'RabbitmqBroker'
 DEFAULT_CONFIG_PREFIX = 'DRAMATIQ_BROKER'
+LAZY_BROKER_DOCSTRING_TEMPLATE = """{description}
+    :param app: An optonal Flask application instance
+
+    :param config_prefix: A prefix for the Flask configuration
+       settings for this broker instance. Each broker instance should
+       have a unique configuration settings prefix.
+
+    :param options: Keyword arguments to be passed to the constructor
+       of the wrapped `dramatiq` broker class.
+"""
 
 
 def register_broker_class(broker_class):
@@ -109,6 +119,15 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
             self.init_app(app)
 
     def init_app(self, app):
+        """This method can be used to initialize an application for the use
+        with this broker. A broker can not be used in the context of
+        an application unless it is initialized that way.
+
+        :func:`init_app` is called automatically if an ``app``
+        argument is passed to the constructor.
+
+        """
+
         configuration = self.__get_configuration(app)
         if self.__stub:
             self.__stub.close()
@@ -142,6 +161,11 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         dramatiq.set_broker(self)
 
     def actor(self, fn=None, **kw):
+        """Declare an actor for this broker instance.
+
+        Calls :func:`dramatiq.actor` internally.
+        """
+
         for kwarg in ['broker', 'actor_class']:
             if kwarg in kw:
                 raise TypeError(
@@ -287,4 +311,20 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
 
 
 class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
-    """A lazy broker of dynamically configurable type."""
+    __doc__ = LAZY_BROKER_DOCSTRING_TEMPLATE.format(
+        description="""A lazy broker of dynamically configurable type.
+
+    The type of the broker should be specified by the
+    "*config_prefix*\_CLASS" setting in the Flask application
+    configuration. Valid broker type names are:
+
+    * ``"RabbitmqBroker"``
+    * ``"RedisBroker"``
+    * ``"StubBroker"``
+
+    For example, if *config_prefix* is the defaut one, the
+    configuration setting: ``REDIS_BROKER_CLASS="RedisBroker"``
+    specifies that the type of the broker should be
+    :class:`~RedisBroker`.
+    """,
+    )  # noqa: W291

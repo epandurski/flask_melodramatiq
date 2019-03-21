@@ -2,6 +2,7 @@ import importlib
 import functools
 import dramatiq
 from flask_melodramatiq.lazy_broker import (
+    LAZY_BROKER_DOCSTRING_TEMPLATE,
     register_broker_class,
     LazyActor,
     LazyBrokerMixin,
@@ -47,19 +48,25 @@ dramatiq.actor.__kwdefaults__['actor_class'] = LazyActor
 RabbitmqBroker = create_broker_class(
     module_name='dramatiq.brokers.rabbitmq',
     class_name='RabbitmqBroker',
-    docstring='A wrapper around :class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker`.'
+    docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
+        description='A lazy broker wrapping :class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker`.\n',
+    ),
 )
 
 
 RedisBroker = create_broker_class(
     module_name='dramatiq.brokers.redis',
     class_name='RedisBroker',
-    docstring='A wrapper around :class:`~dramatiq.brokers.redis.RedisBroker`.'
+    docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
+        description='A lazy broker wrapping :class:`~dramatiq.brokers.redis.RedisBroker`.\n',
+    ),
 )
 
 
 StubBroker = create_broker_class(
     module_name='dramatiq.brokers.stub',
     class_name='StubBroker',
-    docstring='A wrapper around :class:`~dramatiq.brokers.stub.StubBroker`.'
+    docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
+        description='A lazy broker wrapping :class:`~dramatiq.brokers.stub.StubBroker`.\n',
+    ),
 )
