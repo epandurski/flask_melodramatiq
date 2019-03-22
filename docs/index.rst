@@ -116,8 +116,7 @@ broker instance you may run::
 
 and in ``wsgi.py`` you may have something like this::
 
-   from myapp import create_app
-   from myapp.tasks import broker
+   from myapp import create_app, broker
 
    app = create_app()
 
