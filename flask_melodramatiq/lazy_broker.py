@@ -168,6 +168,16 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         """Declare an actor for this broker instance.
 
         Calls :func:`dramatiq.actor` internally.
+
+        Example::
+
+          from flask_melodramatiq import Broker
+
+          broker = Broker()
+
+          @broker.actor
+          def task():
+              print('Snakes appreciate good theatrical preformace.')
         """
 
         for kwarg in ['broker', 'actor_class']:

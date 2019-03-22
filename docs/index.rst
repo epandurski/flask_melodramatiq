@@ -71,6 +71,10 @@ Lazy brokers are thin wrappers which add several important features:
 
 4. They add few convenience methods (see `api`).
 
+
+Configuration
+-------------
+
 You can change the configuration options for your broker by passing
 keyword arguments to the constructor, or by setting corresponding
 values for the ``DRAMATIQ_BROKER_*`` set of keys in the app
@@ -86,17 +90,39 @@ or you can put this in your app config::
    DRAMATIQ_BROKER_URL = 'amqp://mybroker:5672'
    DRAMATIQ_BROKER_CONFIRM_DELIVERY = True
 
-You can even instantiate a broker of dynamically configurable type::
+If the configuration values passed to the constructor are different
+from the ones set in the app config, the later take precedence. You
+can even set/override the type of the broker in the app config::
 
   from flask_melodramatiq import Broker
 
-  broker = Broker()  # Broker's type is not fixed
+  broker = Broker()  # Broker's type is not specified here.
 
-and then specify the type in the app config::
+and instead, specify the type in the app config::
 
    DRAMATIQ_BROKER_CLASS = 'StubBroker'
 
 This feature can be quite useful when testing your code.
+
+
+Starting workers
+----------------
+
+With Flask-Melodramatiq you have the whole power of dramatiq's CLI on
+on your disposal. For example, to start worker processes for your
+broker instance you may run::
+
+  $ dramatiq wsgi:broker
+
+and in ``wsgi.py`` you may have something like this::
+
+   from myapp import create_app
+   from myapp.tasks import broker
+
+   app = create_app()
+
+You may have as many broker instances as you want, but you need to
+start each one of them with a separate command.
 
 
 Contents:
