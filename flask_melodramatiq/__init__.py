@@ -23,6 +23,8 @@ def create_broker_class(classpath, *, classname=None, docstring=None):
 
     :param docstring: Optional documentation string for the new class
 
+    :return: The created lazy broker class
+
     Example::
 
       from flask_melodramatiq import create_broker_class
