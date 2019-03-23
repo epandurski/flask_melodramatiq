@@ -56,7 +56,8 @@ brokers are thin wrappers which add several important features:
 3. The Flask application context is correctly set during the execution
    of the tasks.
 
-4. They add few convenience methods.
+4. They add few convenience methods. The ``Broker.actor`` decorator
+   for example.
 
 
 Configuration
@@ -109,6 +110,15 @@ and in ``wsgi.py`` you may have something like this::
 
 You may have as many broker instances as you want, but you need to
 start each one of them with a separate command.
+
+
+Installation
+------------
+
+You can install Flask-Melodramatiq with ``pip``::
+
+    $ pip install Flask-Melodramatiq
+
 
 
 You can read the docs `here`_.

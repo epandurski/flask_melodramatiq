@@ -6,7 +6,7 @@
 Welcome to Flask-Melodramatiq's documentation!
 ==============================================
 
-Release v\ |release|. (:doc:`installation`, :doc:`api`, `Source Code`_)
+Release v\ |release|. (:doc:`api`, `Source Code`_)
 
 .. _Source Code: https://github.com/epandurski/flask_melodramatiq
 
@@ -69,7 +69,8 @@ Lazy brokers are thin wrappers which add several important features:
 3. The Flask application context is correctly set during the execution
    of the tasks.
 
-4. They add few convenience methods (see `api`).
+4. They add few convenience methods. (The
+   :meth:`~flask_melodramatiq.Broker.actor` decorator for example.)
 
 
 Configuration
@@ -124,11 +125,18 @@ You may have as many broker instances as you want, but you need to
 start each one of them with a separate command.
 
 
+Installation
+------------
+
+You can install Flask-Melodramatiq with :command:`pip`::
+
+    $ pip install Flask-Melodramatiq
+
+
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   installation
    api
    Source Code <https://github.com/epandurski/flask_melodramatiq>
