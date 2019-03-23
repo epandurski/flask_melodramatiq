@@ -56,8 +56,8 @@ brokers are thin wrappers which add several important features:
 3. The Flask application context is correctly set during the execution
    of the tasks.
 
-4. They add few convenience methods. The ``Broker.actor`` decorator
-   for example.
+4. They add few convenience methods. (The ``Broker.actor`` decorator
+   for example.)
 
 
 Configuration
