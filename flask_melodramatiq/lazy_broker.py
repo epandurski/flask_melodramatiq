@@ -17,10 +17,6 @@ LAZY_BROKER_DOCSTRING_TEMPLATE = """{description}
 
     :param options: Keyword arguments to be passed to the constructor
        of the wrapped `dramatiq` broker class.
-
-    In addition to all the methods defined for
-    :class:`~dramatiq.Broker` instances, few more methods are
-    available.
 """
 
 
@@ -28,8 +24,8 @@ def register_broker_class(broker_class):
     class_name = broker_class.__name__
     assert issubclass(broker_class, dramatiq.Broker)
     assert issubclass(broker_class, LazyBrokerMixin)
-    assert class_name != 'Broker'
-    assert class_name not in _broker_classes_registry
+    if class_name == 'Broker' or class_name in _broker_classes_registry:
+        raise RuntimeError('"{}" is already registered.'.format(class_name))
     _broker_classes_registry[class_name] = broker_class
 
 
@@ -330,15 +326,19 @@ class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
 
     The type of the broker should be specified by the
     "*config_prefix*\_CLASS" setting in the Flask application
-    configuration. Valid broker type names are:
+    configuration. For example, if *config_prefix* is the defaut one,
+    the configuration setting: ``DRAMATIQ_BROKER_CLASS="RedisBroker"``
+    specifies that the type of the broker should be
+    :class:`~RedisBroker`.
 
-    * ``"RabbitmqBroker"``
+    The following broker type names are always valid:
+
+    * ``"RabbitmqBroker"`` (default)
     * ``"RedisBroker"``
     * ``"StubBroker"``
 
-    For example, if *config_prefix* is the defaut one, the
-    configuration setting: ``DRAMATIQ_BROKER_CLASS="RedisBroker"``
-    specifies that the type of the broker should be
-    :class:`~RedisBroker`.
+    In addition to these, custom broker types can be registered with
+    :func:`~flask_melodramatiq.create_broker_class`.
+
     """,
     )  # noqa: W291

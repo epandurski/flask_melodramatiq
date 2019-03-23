@@ -9,24 +9,44 @@ from flask_melodramatiq.lazy_broker import (
     Broker,
 )
 
-__all__ = ['Broker', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
+__all__ = ['create_broker_class', 'Broker', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
 
 
-def create_broker_class(module_name, class_name, docstring=None):
+def create_broker_class(classpath, *, classname=None, docstring=None):
+    """Create a new lazy broker class that wraps an existing broker class.
+
+    :param classpath: A module path to the existing broker class. For
+      example: ``"dramatiq.brokers.rabbitmq:RabbitmqBroker"``.
+
+    :param classname: Optional name for the new class. If not given,
+      the class name specified in **classpath** will be used.
+
+    :param docstring: Optional documentation string for the new class
+
+    Example::
+
+      from flask_melodramatiq import create_broker_class
+
+      PostgresBroker = create_broker_class('dramatiq_pg:PostgresBroker')
+
+    """
+
+    modname, varname = classpath.split(':', maxsplit=1)
+    classname = classname or varname
     try:
-        module = importlib.import_module(module_name)
+        module = importlib.import_module(modname)
     except ImportError as e:
         # We will raise this exact import error when the class is
         # instantiated by the user.
         raise_import_error = functools.partial(raise_error, e)
-        broker_class = type(class_name, (Broker,), dict(
+        broker_class = type(classname, (Broker,), dict(
             __init__=raise_import_error,
             __doc__=docstring,
             _dramatiq_broker_factory=raise_import_error,
         ))
     else:
-        superclass = getattr(module, class_name)
-        broker_class = type(class_name, (LazyBrokerMixin, superclass), dict(
+        superclass = getattr(module, varname)
+        broker_class = type(classname, (LazyBrokerMixin, superclass), dict(
             __doc__=docstring,
             _dramatiq_broker_factory=superclass,
         ))
@@ -46,8 +66,7 @@ dramatiq.actor.__kwdefaults__['actor_class'] = LazyActor
 
 
 RabbitmqBroker = create_broker_class(
-    module_name='dramatiq.brokers.rabbitmq',
-    class_name='RabbitmqBroker',
+    classpath='dramatiq.brokers.rabbitmq:RabbitmqBroker',
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
         description='A lazy broker wrapping a :class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker`.\n',
     ),
@@ -55,8 +74,7 @@ RabbitmqBroker = create_broker_class(
 
 
 RedisBroker = create_broker_class(
-    module_name='dramatiq.brokers.redis',
-    class_name='RedisBroker',
+    classpath='dramatiq.brokers.redis:RedisBroker',
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
         description='A lazy broker wrapping a :class:`~dramatiq.brokers.redis.RedisBroker`.\n',
     ),
@@ -64,8 +82,7 @@ RedisBroker = create_broker_class(
 
 
 StubBroker = create_broker_class(
-    module_name='dramatiq.brokers.stub',
-    class_name='StubBroker',
+    classpath='dramatiq.brokers.stub:StubBroker',
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
         description='A lazy broker wrapping a :class:`~dramatiq.brokers.stub.StubBroker`.\n',
     ),

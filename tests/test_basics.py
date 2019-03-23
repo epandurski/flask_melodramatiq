@@ -240,10 +240,7 @@ def test_config_override(app, caplog):
 
 def test_import_error(app):
     from flask_melodramatiq import create_broker_class
-    NonExistingBroker = create_broker_class(
-        module_name='non_existing_modlule',
-        class_name='NonExistingBroker',
-    )
+    NonExistingBroker = create_broker_class('non_existing_modlule:NonExistingBroker')
     with pytest.raises(ImportError):
         NonExistingBroker(config_prefix='IMPORT_ERROR_BROKER')
 

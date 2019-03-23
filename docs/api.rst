@@ -3,6 +3,7 @@ API Reference
 
 .. module:: flask_melodramatiq
 
+.. autofunction:: create_broker_class
 
 .. autoclass:: Broker
    :members: init_app, set_default, actor
