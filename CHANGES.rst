@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 0.3.3
+-------------
+
+- Fixed minor setuptools packaging issues.
+
+
 Version 0.3.2
 -------------
 

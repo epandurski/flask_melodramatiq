@@ -22,7 +22,7 @@ with open(rel("README.rst")) as f:
 
 setup(
     name='Flask-Melodramatiq',
-    version='0.3.2',
+    version='0.3.3',
     url='https://github.com/epandurski/flask_melodramatiq',
     license='MIT',
     author='Evgeni Pandurski',
