@@ -1,13 +1,13 @@
 Flask-Melodramatiq
 ==================
 
-**Flask-Melodramatiq** is a Flask extension that adds support for the
-`dramatiq`_ task processing library.
+**Flask-Melodramatiq** is a `Flask`_ extension that adds support for
+the `Dramatiq`_ task processing library.
 
-`dramatiq`_ is a great library, and Flask-Melodramatiq tries hard not
+`Dramatiq`_ is a great library, and Flask-Melodramatiq tries hard not
 to force you to change the way you interact with
 it. Flask-Melodramatiq defines thin wrappers around the broker types
-available in dramatiq, so that all the power of dramatiq's API remains
+available in Dramatiq, so that all the power of Dramatiq's API remains
 available to you.
 
 For example::
@@ -43,7 +43,7 @@ or, if you prefer the Flask application factory pattern::
       return app
 
 In those examples, the ``broker`` instance that we created (we call it
-a "lazy broker") is a genuine `dramatiq`_ broker, and can be used
+a "lazy broker") is a genuine `Dramatiq`_ broker, and can be used
 anywhere where a "native" broker can be used. (It has
 ``dramatiq.brokers.rabbitmq.RabbitmqBroker`` as a superclass!)  Lazy
 brokers are thin wrappers which add several important features:
@@ -96,7 +96,7 @@ This feature can be quite useful when testing your code.
 Starting workers
 ----------------
 
-With Flask-Melodramatiq you have the whole power of dramatiq's CLI on
+With Flask-Melodramatiq you have the whole power of Dramatiq's CLI on
 on your disposal. For example, to start worker processes for your
 broker instance you may run::
 
@@ -125,4 +125,5 @@ You can read the docs `here`_.
 
 
 .. _here: https://flask-melodramatiq.readthedocs.io/en/latest/
-.. _dramatiq: https://github.com/Bogdanp/dramatiq
+.. _Dramatiq: https://github.com/Bogdanp/dramatiq
+.. _Flask: http://flask.pocoo.org/
