@@ -2,7 +2,7 @@ import pytest
 import flask
 import dramatiq
 from flask_melodramatiq.lazy_broker import _registered_config_prefixes
-from flask_melodramatiq import StubBroker, Broker
+from flask_melodramatiq import StubBroker, Broker, RabbitmqBroker
 from mock import Mock
 
 
@@ -20,6 +20,15 @@ def broker(app, request):
     else:
         app.config['DRAMATIQ_BROKER_CLASS'] = 'StubBroker'
         broker = Broker()
+    broker.set_default()
+    yield broker
+    config_prefix = broker._LazyBrokerMixin__config_prefix
+    _registered_config_prefixes.remove(config_prefix)
+
+
+@pytest.fixture
+def rabbitmq_broker(app, request):
+    broker = RabbitmqBroker()
     broker.set_default()
     yield broker
     config_prefix = broker._LazyBrokerMixin__config_prefix

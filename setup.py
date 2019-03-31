@@ -42,6 +42,7 @@ setup(
         'pytest',
         'pytest-cov',
         'mock',
+        'pika',
     ],
     classifiers=[
         'Environment :: Web Environment',
