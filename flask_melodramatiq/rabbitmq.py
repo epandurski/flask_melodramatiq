@@ -2,7 +2,7 @@ import dramatiq
 
 
 class RabbitmqBrokerMixin:
-    def publish(self, message, *, exchange=''):
+    def publish_message(self, message, *, exchange=''):
         """Publish a message on an exchange.
 
         :param message: The message. The routing key will be
