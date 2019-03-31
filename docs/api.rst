@@ -9,7 +9,7 @@ API Reference
    :members: init_app, set_default, actor
 
 .. autoclass:: RabbitmqBroker
-   :members: init_app, set_default, actor
+   :members: init_app, set_default, actor, publish
 
 .. autoclass:: RedisBroker
    :members: init_app, set_default, actor
