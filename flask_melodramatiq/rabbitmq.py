@@ -12,8 +12,8 @@ class RabbitmqBrokerMixin:
 
         :type message: dramatiq.Message
 
-        :param exchange: The name of the exchange on which to publish
-          the message
+        :param exchange: The name of the RabbitMQ exchange on which to
+          publish the message
 
         """
 
