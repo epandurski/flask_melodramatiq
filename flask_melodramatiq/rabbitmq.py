@@ -3,7 +3,7 @@ import dramatiq
 
 class RabbitmqBrokerMixin:
     def publish(self, message, *, exchange=''):
-        """Publishes a message on an exchange.
+        """Publish a message on an exchange.
 
         :param message: The message. The routing key will be
           ``f"dramatiq.events.{message.actor_name}"`` if
