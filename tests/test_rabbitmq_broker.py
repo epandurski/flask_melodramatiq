@@ -1,9 +1,7 @@
-import pytest
 import dramatiq
 import time
 
 
-@pytest.mark.skip
 def test_publish(app, rabbitmq_broker, run_mock):
     @rabbitmq_broker.actor
     def task():
