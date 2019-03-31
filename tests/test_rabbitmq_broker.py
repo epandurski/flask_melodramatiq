@@ -8,6 +8,8 @@ def test_broker_connection_attrs(app, rabbitmq_broker):
     assert hasattr(rabbitmq_broker, 'connection')
     del rabbitmq_broker.channel
     del rabbitmq_broker.connection
+    assert hasattr(rabbitmq_broker, 'channel')
+    assert hasattr(rabbitmq_broker, 'connection')
 
 
 def test_connection_closed_error():
