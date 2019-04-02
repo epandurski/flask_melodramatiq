@@ -11,3 +11,18 @@ jobs:
             apt-get update && apt-get -y --no-install-recommends install rabbitmq-server
             service rabbitmq-server start
             python setup.py test
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - build
+  nightly:
+    triggers:
+      - schedule:
+          cron: "30 5 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build
