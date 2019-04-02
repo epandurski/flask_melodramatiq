@@ -30,9 +30,17 @@ class RabbitmqBrokerMixin:
         )
 
         attempts = 1
+        try:
+            # In pika 1.0.0 the legacy `basic_publish` method is
+            # removed, and `publish` renamed to `basic_publish`. So,
+            # to support pika versions before and after 1.0.0 we need
+            # an ugly hack.
+            publish = self.channel.publish
+        except AttributeError:
+            publish = self.channel.basic_publish
         while True:
             try:
-                self.channel.publish(
+                publish(
                     exchange=exchange,
                     routing_key=routing_key,
                     body=message.encode(),
