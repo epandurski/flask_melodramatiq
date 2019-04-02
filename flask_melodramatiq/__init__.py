@@ -45,7 +45,7 @@ def create_broker_class(classpath, *, classname=None, docstring=None, mixins=())
         # We will raise this exact import error when the class is
         # instantiated by the user.
         raise_import_error = functools.partial(raise_error, e)
-        broker_class = type(classname, (Broker,), dict(
+        broker_class = type(classname, mixins + (Broker,), dict(
             __init__=raise_import_error,
             __doc__=docstring,
             _dramatiq_broker_factory=raise_import_error,
