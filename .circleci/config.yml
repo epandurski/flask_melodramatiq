@@ -19,6 +19,5 @@ jobs:
           name: Run Tests
           command: |
             apt-get update && apt-get -y --no-install-recommends install rabbitmq-server
-            service --status-all
+            service rabbitmq-server start
             python setup.py test
-
