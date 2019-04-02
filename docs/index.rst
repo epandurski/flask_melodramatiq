@@ -12,10 +12,12 @@ Release v\ |release|. (:doc:`api`, `Source Code`_)
 
 .. image:: https://badge.fury.io/py/Flask-Melodramatiq.svg
    :target: https://badge.fury.io/py/Flask-Melodramatiq
-   :alt: Version on PyPI
 
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
    :target: https://opensource.org/licenses/MIT
+
+.. image:: https://circleci.com/gh/epandurski/flask_melodramatiq.svg?style=shield
+   :target: https://circleci.com/gh/epandurski/flask_melodramatiq
 
 .. _Dramatiq: https://github.com/Bogdanp/dramatiq
 .. _Flask: http://flask.pocoo.org/
