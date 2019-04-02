@@ -15,3 +15,8 @@ jobs:
           command: |
             ls -al
             echo '^^^That should look familiar^^^'
+      - run:
+          name: Run Tests
+          command: |
+            python3 setup.py test
+
