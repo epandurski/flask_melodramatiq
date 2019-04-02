@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 0.3.4
+-------------
+
+- Added `RabbitmqBroker.publish_message()` method.
+- Added `.circleci` directory
+
+
 Version 0.3.3
 -------------
 
