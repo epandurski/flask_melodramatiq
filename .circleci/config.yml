@@ -2,7 +2,7 @@ version: 2.0
 jobs:
   build:
     docker:
-      - image: alpine:3.7
+      - image: python:3-alpine
     steps:
       - checkout
       - run:
@@ -18,5 +18,5 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            python3 setup.py test
+            python setup.py test
 
