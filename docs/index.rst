@@ -10,6 +10,10 @@ Release v\ |release|. (:doc:`api`, `Source Code`_)
 
 .. _Source Code: https://github.com/epandurski/flask_melodramatiq
 
+.. image:: https://badge.fury.io/py/Flask-Melodramatiq.svg
+   :target: https://badge.fury.io/py/Flask-Melodramatiq
+   :alt: Version on PyPI
+
 .. image:: https://img.shields.io/badge/License-MIT-yellow.svg
    :target: https://opensource.org/licenses/MIT
 
