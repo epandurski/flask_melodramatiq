@@ -18,6 +18,6 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            apk add --no-cache rabbitmq-server
+            apt-get update && apt-get -y --no-install-recommends install rabbitmq-server
             python setup.py test
 
