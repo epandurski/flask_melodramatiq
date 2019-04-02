@@ -18,5 +18,6 @@ jobs:
       - run:
           name: Run Tests
           command: |
+            apk add --no-cache rabbitmq-server
             python setup.py test
 
