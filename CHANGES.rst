@@ -6,6 +6,7 @@ Version 0.3.5
 
 - Added `routing_key` argument to the
   `RabbitmqBroker.publish_message()` method.
+- Fixed minor documentation issue
 
 
 Version 0.3.4
