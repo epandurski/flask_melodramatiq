@@ -108,11 +108,10 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         self.__options = options
         self.__configuration = None
 
-        # When an actor is defined, broker's `actor_options` attribute
-        # is accessed, which asks the middleware what actor options
-        # are valid. We will delegate this work to a stub broker,
-        # until our broker is ready.
-        self.__stub = dramatiq.brokers.stub.StubBroker(middleware=options.get('middleware'))
+        # We want to be able to add middleware and declare actors
+        # before `init_app` is called. We do this by delegating to a
+        # stub broker, until our broker is ready.
+        self.__stub = dramatiq.brokers.stub.StubBroker(middleware=options.pop('middleware', None))
 
         self._unregistered_lazy_actors = []
         if app is not None:
@@ -128,8 +127,9 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
 
         """
 
-        configuration = self.__get_configuration(app)
         if self.__stub:
+            self.__options['middleware'] = self.__stub.middleware
+            configuration = self.__get_configuration(app)
             self.__stub.close()
             self.__stub = None
             self.__app = app
@@ -142,6 +142,8 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
                 actor._register_proxied_instance(broker=broker)
             self._unregistered_lazy_actors = None
             self._proxied_instance = broker  # `self` is sealed from now on.
+        else:
+            configuration = self.__get_configuration(app)
         if configuration != self.__configuration:
             raise RuntimeError(
                 '{} tried to reconfigure an already configured broker.'.format(app)
@@ -191,6 +193,9 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
     @property
     def actor_options(self):
         return (self._proxied_instance or self.__stub).actor_options
+
+    def add_middleware(self, middleware, *, before=None, after=None):
+        return (self._proxied_instance or self.__stub).add_middleware(middleware, before=before, after=after)
 
     def __get_primary_options(self):
         options = self.__options.copy()

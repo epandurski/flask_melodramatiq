@@ -3,6 +3,7 @@ import dramatiq
 import pytest
 from flask_melodramatiq import Broker, StubBroker
 from flask_melodramatiq.lazy_broker import LazyActor, MultipleAppsWarningMiddleware
+from dramatiq.middleware import Middleware
 
 
 def test_actor_attr_access(app, broker, run_mock):
@@ -250,3 +251,28 @@ def test_after_process_boot_warning(broker, caplog):
     MultipleAppsWarningMiddleware().after_process_boot(broker)
     assert len(caplog.records) == n + 1
     assert 'application context may be set incorrectly' in caplog.text
+
+
+def test_add_middleware(app, broker, run_mock):
+    class TestMiddleware(Middleware):
+        @property
+        def actor_options(self):
+            return {"test_option"}
+
+        def after_process_message(self, broker, message, *, result=None, exception=None):
+            run_mock()
+
+    broker.add_middleware(TestMiddleware())
+
+    @broker.actor(test_option=123)
+    def task():
+        pass
+
+    broker.init_app(app)
+    broker.add_middleware(TestMiddleware())
+    assert task.options['test_option'] == 123
+    task.send()
+    worker = dramatiq.Worker(broker)
+    worker.start()
+    worker.join()
+    assert run_mock.call_count == 2

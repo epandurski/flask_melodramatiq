@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 0.3.6
+-------------
+
+- Allow `add_middleware` to be called on brokers before `init_app`.
+
+
 Version 0.3.5
 -------------
 
