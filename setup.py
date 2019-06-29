@@ -39,9 +39,9 @@ setup(
         'dramatiq>=1.5',
     ],
     tests_require=[
-        'pytest',
-        'pytest-cov',
-        'mock',
+        'pytest~=4.6',
+        'pytest-cov~=2.7',
+        'mock~=2.0',
         'pika>=0.13',
     ],
     classifiers=[
