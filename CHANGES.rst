@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.3.7
+-------------
+
+- Removed support for `Pika` < 1.0.
+- Fixd a connection timeout problem when using
+  `RabbitmqBroker.publish_message()`
+
+
 Version 0.3.6
 -------------
 
