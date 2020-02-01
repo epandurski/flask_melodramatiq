@@ -210,7 +210,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         options = {
             k[len(prefix):].lower(): v
             for k, v in app.config.items()
-            if k.isupper() and k.startswith(prefix)
+            if k.isupper() and k.startswith(prefix) and v is not None
         }
         if 'middleware' in options:
             value = options.pop('middleware')
