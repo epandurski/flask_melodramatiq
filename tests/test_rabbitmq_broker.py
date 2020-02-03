@@ -24,9 +24,9 @@ def test_publish_message(app, rabbitmq_broker, run_mock):
 
     rabbitmq_broker.init_app(app)
     m = dramatiq.Message(queue_name='default', actor_name='task', args=(), kwargs={}, options={})
-    rabbitmq_broker.publish_message(m, exchange='')
     worker = dramatiq.Worker(rabbitmq_broker)
     worker.start()
+    rabbitmq_broker.publish_message(m, exchange='')
     time.sleep(2.0)
     worker.join()
     worker.stop()
