@@ -6,6 +6,11 @@ import dramatiq.brokers.stub
 _registered_config_prefixes = set()
 _broker_classes_registry = {}
 
+
+class missing:
+    """Missing value for configuration variables."""
+
+
 DEFAULT_CLASS_NAME = 'RabbitmqBroker'
 DEFAULT_CONFIG_PREFIX = 'DRAMATIQ_BROKER'
 LAZY_BROKER_DOCSTRING_TEMPLATE = """{description}
@@ -210,7 +215,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         options = {
             k[len(prefix):].lower(): v
             for k, v in app.config.items()
-            if k.isupper() and k.startswith(prefix) and v is not None
+            if k.isupper() and k.startswith(prefix) and v is not missing
         }
         if 'middleware' in options:
             value = options.pop('middleware')
