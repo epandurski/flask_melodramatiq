@@ -7,6 +7,7 @@ from flask_melodramatiq.lazy_broker import (
     LazyActor,
     LazyBrokerMixin,
     Broker,
+    missing,
 )
 from flask_melodramatiq.rabbitmq import RabbitmqBrokerMixin
 

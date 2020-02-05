@@ -2,7 +2,7 @@ import flask
 import dramatiq
 import pytest
 from flask_melodramatiq import Broker, StubBroker
-from flask_melodramatiq.lazy_broker import LazyActor, MultipleAppsWarningMiddleware
+from flask_melodramatiq.lazy_broker import LazyActor, MultipleAppsWarningMiddleware, missing
 from dramatiq.middleware import Middleware
 
 
@@ -238,6 +238,12 @@ def test_config_override(app, caplog):
     assert len(caplog.records) == n + 1
     assert 'Ignored configuration setting' in caplog.text
 
+    # options being None are ignored
+    broker9 = StubBroker(config_prefix='CONFIG_OVERRIDE_BROKER9')
+    app.config['CONFIG_OVERRIDE_BROKER9_CLASS'] = 'StubBroker'
+    app.config['CONFIG_OVERRIDE_BROKER9_URL'] = missing
+    broker9.init_app(app)
+    assert isinstance(broker9, StubBroker)
 
 def test_import_error(app):
     from flask_melodramatiq import create_broker_class
