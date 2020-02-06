@@ -318,7 +318,7 @@ class TestBackendResultMiddleware:
         worker.join()
         assert job.get_result() == expected
 
-    def test_it_raises_when_trying_to_register_actors_while_no_result_defined(self, app, broker):
+    def test_it_raises_when_at_runtime_when_no_backend_for_results(self, app, broker):
         @broker.actor(store_results=True)
         def task():
             pass
