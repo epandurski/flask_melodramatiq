@@ -138,7 +138,10 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         """
 
         if self.__stub:
-            self.__options['middleware'] = self.__stub.middleware
+            self.__options['middleware'] = [
+                m for m in self.__stub.middleware
+                if m is not self.__empty_backend
+            ]
             configuration = self.__get_configuration(app)
             self.__stub.close()
             self.__stub = None
@@ -149,10 +152,6 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
 
             # Instanciate dramatiq Broker
             broker = self._dramatiq_broker_factory(**options)
-
-            # Pull out empty backend from middleware
-            if self.__empty_backend in broker.middleware:
-                broker.middleware.remove(self.__empty_backend)
 
             # Add Flask App Context Middleware
             broker.add_middleware(AppContextMiddleware(app))
