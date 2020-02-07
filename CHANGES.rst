@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 0.3.8
+-------------
+
+- Better support for `dramatiq.results.Results`
+
+
 Version 0.3.7
 -------------
 
