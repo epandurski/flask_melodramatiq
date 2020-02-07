@@ -4,6 +4,10 @@ import pytest
 from flask_melodramatiq import Broker, StubBroker
 from flask_melodramatiq.lazy_broker import LazyActor, MultipleAppsWarningMiddleware, missing
 from dramatiq.middleware import Middleware
+from dramatiq.results.backends.redis import RedisBackend
+from dramatiq.results.backends.stub import StubBackend
+from dramatiq.results import Results
+from mock import Mock
 
 
 def test_actor_attr_access(app, broker, run_mock):
@@ -282,3 +286,51 @@ def test_add_middleware(app, broker, run_mock):
     worker.start()
     worker.join()
     assert run_mock.call_count == 2
+
+
+class TestBackendResultMiddleware:
+    def test_it_remove_the_dummy_backend_at_init_app(self, app, broker):
+        mocked_client = Mock()
+        backend = RedisBackend(client=mocked_client)
+        result_middleware = Results(backend=backend)
+        broker.add_middleware(result_middleware)
+        broker.init_app(app)
+
+        only_results = list(filter(lambda x: isinstance(x, Results), broker.middleware))
+        assert len(only_results) == 1
+        assert only_results[0].backend is backend
+
+    def test_it_can_lazy_register_actors_with_store_results(self, app, broker, run_mock):
+        expected = "HelloYou"
+        run_mock.return_value = expected
+        @broker.actor(store_results=True)
+        def task():
+            return run_mock()
+
+        backend = StubBackend()
+        result_middleware = Results(backend=backend)
+        broker.add_middleware(result_middleware)
+        broker.init_app(app)
+
+        job = task.send()
+        worker = dramatiq.Worker(broker)
+        worker.start()
+        worker.join()
+        assert job.get_result() == expected
+
+    def test_it_raises_when_at_runtime_when_no_backend_for_results(self, app, broker):
+        @broker.actor(store_results=True)
+        def task():
+            pass
+
+        broker.init_app(app)
+        broker.emit_after("process_boot")  # set Prometheus
+
+        job = task.send()
+        worker = dramatiq.Worker(broker)
+        worker.start()
+        worker.join()
+
+        match = "default broker doesn't have a results backend"
+        with pytest.raises(RuntimeError, match=match):
+            job.get_result()

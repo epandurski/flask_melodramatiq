@@ -118,6 +118,11 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         # stub broker, until our broker is ready.
         self.__stub = dramatiq.brokers.stub.StubBroker(middleware=options.pop('middleware', None))
 
+        # We want to be be capabale of registering actors that might store
+        # results. In that end, we add a stub backend results proxy.
+        self.__empty_backend = dramatiq.results.Results()
+        self.__stub.add_middleware(self.__empty_backend)
+
         self._unregistered_lazy_actors = []
         if app is not None:
             self.init_app(app)
@@ -133,7 +138,10 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         """
 
         if self.__stub:
-            self.__options['middleware'] = self.__stub.middleware
+            self.__options['middleware'] = [
+                m for m in self.__stub.middleware
+                if m is not self.__empty_backend
+            ]
             configuration = self.__get_configuration(app)
             self.__stub.close()
             self.__stub = None
@@ -141,10 +149,17 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
             self.__configuration = configuration
             options = configuration.copy()
             self.__class__ = options.pop('class')
+
+            # Instanciate dramatiq Broker
             broker = self._dramatiq_broker_factory(**options)
+
+            # Add Flask App Context Middleware
             broker.add_middleware(AppContextMiddleware(app))
+
+            # Register actors on broker
             for actor in self._unregistered_lazy_actors:
                 actor._register_proxied_instance(broker=broker)
+
             self._unregistered_lazy_actors = None
             self._proxied_instance = broker  # `self` is sealed from now on.
         else:
