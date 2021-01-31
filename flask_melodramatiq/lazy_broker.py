@@ -112,6 +112,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
         self.__config_prefix = config_prefix
         self.__options = options
         self.__configuration = None
+        self.__orig_class_name = type(self).__name__
 
         # We want to be able to add middleware and declare actors
         # before `init_app` is called. We do this by delegating to a
@@ -220,7 +221,7 @@ class LazyBrokerMixin(ProxiedInstanceMixin):
     def __get_primary_options(self):
         options = self.__options.copy()
         options.pop('class', None)
-        class_name = type(self).__name__
+        class_name = self.__orig_class_name
         if class_name in _broker_classes_registry:
             options['class'] = class_name
         return options

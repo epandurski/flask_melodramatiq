@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 0.3.9
+-------------
+
+- Fixed a bug. The bug resulted in raising "tried to reconfigure an
+  already configured broker" error in case at least one configuration
+  option has been passed to the borker constructor, and the broker's
+  type is changed in the flask's configuration.
+
+
 Version 0.3.8
 -------------
 
