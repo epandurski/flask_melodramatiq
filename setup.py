@@ -39,7 +39,7 @@ setup(
         'dramatiq>=1.5',
     ],
     tests_require=[
-        'pytest~=4.6',
+        'pytest~=6.2',
         'pytest-cov~=2.7',
         'mock~=2.0',
         'pika>=0.13',
