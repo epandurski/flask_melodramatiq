@@ -9,7 +9,6 @@ from flask_melodramatiq.lazy_broker import (
     Broker,
     missing,
 )
-from flask_melodramatiq.rabbitmq import RabbitmqBrokerMixin
 
 __all__ = ['create_broker_class', 'Broker', 'RabbitmqBroker', 'RedisBroker', 'StubBroker']
 
@@ -77,7 +76,6 @@ RabbitmqBroker = create_broker_class(
     docstring=LAZY_BROKER_DOCSTRING_TEMPLATE.format(
         description='A lazy broker wrapping a :class:`~dramatiq.brokers.rabbitmq.RabbitmqBroker`.\n',
     ),
-    mixins=(RabbitmqBrokerMixin,)
 )
 
 

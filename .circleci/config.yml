@@ -9,8 +9,9 @@ jobs:
           name: Run Tests
           command: |
             apt-get update && apt-get -y --no-install-recommends install rabbitmq-server
-            service rabbitmq-server start
-            python setup.py test
+            pip install 'pytest~=6.2' 'pytest-cov~=2.7' 'mock~=2.0' 'pika>=0.13' 'redis>=3.4'
+            pip install -e .
+            pytest
 workflows:
   version: 2
   commit:

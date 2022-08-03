@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.0
+-----------
+
+- Removed the `RabbitmqBroker.publish_message()` method.
+
+- Documented the use of `missing` configuration values.
+
+
 Version 0.3.9
 -------------
 

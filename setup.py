@@ -22,7 +22,7 @@ with open(rel("README.rst")) as f:
 
 setup(
     name='Flask-Melodramatiq',
-    version='0.3.9',
+    version='1.0',
     url='https://github.com/epandurski/flask_melodramatiq',
     license='MIT',
     author='Evgeni Pandurski',
@@ -54,9 +54,10 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
     project_urls={
         "Bug Tracker": "https://github.com/epandurski/flask_melodramatiq/issues",

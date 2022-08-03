@@ -8,7 +8,18 @@ _broker_classes_registry = {}
 
 
 class missing:
-    """Missing value for configuration variables."""
+    """Missing value for configuration variables. This can be useful when
+    you want to document the given configuration setting in your code,
+    but you do not want to change the default value.
+
+    For example::
+
+        from flask import Flask
+        from flask_melodramatiq import missing
+
+        app = Flask(__name__)
+        app.config['DRAMATIQ_BROKER_URL'] = missing
+    """
 
 
 DEFAULT_CLASS_NAME = 'RabbitmqBroker'
