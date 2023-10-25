@@ -72,7 +72,12 @@ class ProxiedInstanceMixin:
 
     def __getattr__(self, name):
         if self._proxied_instance is None:
-            if name in ['__code__', '__defaults__', '__kwdefaults__']:
+            if name in [
+                '__code__',
+                '__defaults__',
+                '__kwdefaults__',
+                '_is_coroutine_marker',
+            ]:
                 # `iscoroutinefunction` may be called on Actor instances,
                 # which checks these names.
                 raise AttributeError
