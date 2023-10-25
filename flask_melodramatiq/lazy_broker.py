@@ -70,11 +70,6 @@ class ProxiedInstanceMixin:
             return object.__repr__(self)
         return repr(self._proxied_instance)
 
-    def __code__(self):
-        if self._proxied_instance is None:
-            return object.__code__(self)
-        return self._proxied_instance.__code__
-
     def __getattr__(self, name):
         if self._proxied_instance is None:
             raise RuntimeError(
