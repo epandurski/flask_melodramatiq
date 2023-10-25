@@ -72,7 +72,10 @@ class ProxiedInstanceMixin:
 
     def __getattr__(self, name):
         if self._proxied_instance is None:
-            print(name)
+            if name == '__code__':
+                # `iscoroutinefunction` may be called on Actor instances,
+                # which calls __code__().
+                raise AttributeError
             raise RuntimeError(
                 'init_app() must be called on lazy brokers before use. '
                 'Did you forget to pass the "app" to broker\'s constructor?'
