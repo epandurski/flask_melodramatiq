@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Version 1.0.1
+-------------
+
+- Fixed tests failing on Dramatiq 1.15
+
+- Fixed a problem with `GenericActor` on Python 3.12.
+
+- Fixed a syntax warning on newer Python versions.
+
+
 Version 1.0
 -----------
 
