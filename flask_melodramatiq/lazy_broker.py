@@ -359,7 +359,7 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
 
 class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
     __doc__ = LAZY_BROKER_DOCSTRING_TEMPLATE.format(
-        description="""A lazy broker of dynamically configurable type.
+        description=r"""A lazy broker of dynamically configurable type.
 
     The type of the broker should be specified by the
     "*config_prefix*\_CLASS" setting in the Flask application
