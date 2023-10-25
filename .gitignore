@@ -103,5 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# direnv subdir
+.direnv/
+
 # Emacs backup files
 *~

@@ -331,6 +331,6 @@ class TestBackendResultMiddleware:
         worker.start()
         worker.join()
 
-        match = "default broker doesn't have a results backend"
+        match = "broker doesn't have a results backend"
         with pytest.raises(RuntimeError, match=match):
             job.get_result()

@@ -72,6 +72,16 @@ class ProxiedInstanceMixin:
 
     def __getattr__(self, name):
         if self._proxied_instance is None:
+            if name in [
+                '__code__',
+                '__defaults__',
+                '__kwdefaults__',
+                '_is_coroutine_marker',
+            ]:
+                # For `GenericActor`s, `iscoroutinefunction` may be called
+                # on unregistered actor proxies, which checks for these
+                # attribute names.
+                raise AttributeError
             raise RuntimeError(
                 'init_app() must be called on lazy brokers before use. '
                 'Did you forget to pass the "app" to broker\'s constructor?'
@@ -359,7 +369,7 @@ class MultipleAppsWarningMiddleware(dramatiq.Middleware):
 
 class Broker(LazyBrokerMixin, dramatiq.brokers.stub.StubBroker):
     __doc__ = LAZY_BROKER_DOCSTRING_TEMPLATE.format(
-        description="""A lazy broker of dynamically configurable type.
+        description=r"""A lazy broker of dynamically configurable type.
 
     The type of the broker should be specified by the
     "*config_prefix*\_CLASS" setting in the Flask application
