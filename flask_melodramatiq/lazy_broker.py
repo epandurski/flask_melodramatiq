@@ -78,8 +78,9 @@ class ProxiedInstanceMixin:
                 '__kwdefaults__',
                 '_is_coroutine_marker',
             ]:
-                # `iscoroutinefunction` may be called on Actor instances,
-                # which checks these names.
+                # For `GenericActor`s, `iscoroutinefunction` may be called
+                # on unregistered actor proxies, which checks for these
+                # attribute names.
                 raise AttributeError
             raise RuntimeError(
                 'init_app() must be called on lazy brokers before use. '
