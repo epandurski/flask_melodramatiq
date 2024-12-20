@@ -77,6 +77,7 @@ class ProxiedInstanceMixin:
                 '__defaults__',
                 '__kwdefaults__',
                 '__annotations__',
+                '__partialmethod__',
                 '_is_coroutine_marker',
             ]:
                 # For `GenericActor`s, `iscoroutinefunction` may be called
