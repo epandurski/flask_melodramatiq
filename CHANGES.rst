@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Version 1.0.2
+-------------
+
+- Make it work with newer versions of `attrs`.
+
+
 Version 1.0.1
 -------------
 

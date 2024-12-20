@@ -4,6 +4,8 @@ Flask-Melodramatiq
 **Flask-Melodramatiq** is a `Flask`_ extension that adds support for
 the `Dramatiq`_ task processing library.
 
+**FLASK-MELODRAMATIQ IS LOOKING FOR A MAINTAINER!!!**
+
 `Dramatiq`_ is a great library, and Flask-Melodramatiq tries hard not
 to force you to change the way you interact with
 it. Flask-Melodramatiq defines thin wrappers around the broker types
